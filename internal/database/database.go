@@ -22,9 +22,9 @@ func CreateTask(name string, description string, status bool) {
 		panic("func create failed to connect database")
 	}
 	db.Create(&entities.Task{
-		Name: "test1",
-		Description: "test2",
-		Status: true,
+		Name: name,
+		Description: description,
+		Status: status,
 	})
 }
 
