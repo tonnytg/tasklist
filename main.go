@@ -3,18 +3,22 @@ package main
 import (
 	"fmt"
 	"github.com/tonnytg/tasklist/entities"
-	"github.com/tonnytg/tasklist/internal/webserver"
-	"time"
+	"github.com/tonnytg/tasklist/internal/database"
+	"github.com/tonnytg/tasklist/pkg/api"
 )
 
 func main() {
 	fmt.Println("Tasklist with Go")
 
-	createAt := time.Now().Format("2006-01-02")
-	task := entities.Task{1, "2022", "Teste1", "Task criada para teste", true}
+	//createAt := time.Now().Format("2006-01-02")
+	task := entities.Task{Name: "Teste1", Description: "Task criada para teste", Status: true}
 
-	fmt.Printf("---\nTask:\t\t%d\nName:\t\t%s\nCriada em:\t%s\n", task.ID, task.Name, createAt)
+	// Save at database
+	database.CreateTask(task.Name, task.Description, task.Status)
 
-	// Start Webserver listening by default :8080
-	webserver.Start()
+	task2 := database.GetTask(1) // find product with integer primary key
+	fmt.Println("Task geted:", task2)
+
+	// Start API to listening
+	api.Start()
 }

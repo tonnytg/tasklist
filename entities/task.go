@@ -1,9 +1,14 @@
 package entities
 
+import (
+	"time"
+)
+
 type Task struct {
-	ID          int32
-	CreateAt    string
+	ID          uint
 	Name        string
 	Description string
 	Status      bool
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 }
