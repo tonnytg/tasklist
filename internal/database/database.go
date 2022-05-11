@@ -22,9 +22,9 @@ func CreateTask(name string, description string, status bool) {
 		panic("func create failed to connect database")
 	}
 	db.Create(&entities.Task{
-		Name: name,
+		Name:        name,
 		Description: description,
-		Status: status,
+		Status:      status,
 	})
 }
 
@@ -48,4 +48,16 @@ func ListTask() []entities.Task {
 	var tempTask []entities.Task
 	db.Find(&tempTask)
 	return tempTask
+}
+
+func UpdateTask(ID int32, name string, description string) {
+	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+	if err != nil {
+		panic("func create failed to connect database")
+	}
+
+	task := GetTask(ID)
+	task.Name = name
+	task.Description = description
+	db.Save(&task)
 }

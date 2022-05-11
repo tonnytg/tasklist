@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/tonnytg/tasklist/entities"
@@ -14,7 +15,7 @@ func Start() {
 
 	http.HandleFunc("/api/tasks", ListHandler)
 	http.HandleFunc("/api/tasks/add", CreateHandler)
-	http.HandleFunc("/api/tasks/update/{id}", UpdateHandler)
+	http.HandleFunc("/api/tasks/update", UpdateHandler)
 	http.HandleFunc("/api/tasks/delete/{id}", DeleteHandler)
 
 	port := os.Getenv("PORT")
@@ -30,7 +31,7 @@ func Start() {
 func ListHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 		tasks := database.ListTask()
-		for i,v := range tasks {
+		for i, v := range tasks {
 			fmt.Fprintf(w, "Tasks %d: %s \t description: %s \n", i, v.Name, v.Description)
 		}
 	}
@@ -47,21 +48,25 @@ func CreateHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Save at database
 		database.CreateTask(task.Name, task.Description, task.Status)
-
-		tasks := database.ListTask()
-		for i,v := range tasks {
-			fmt.Fprintf(w, "Tasks %d: %s \t description: %s \n", i, v.Name, v.Description)
+		w.WriteHeader(http.StatusOK)
+		w.Header().Set("Content-Type", "application/json")
+		resp := make(map[string]string)
+		resp["message"] = "Status OK"
+		jsonResp, err := json.Marshal(resp)
+		if err != nil {
+			log.Fatalf("Error happened in JSON marshal. Err: %s", err)
 		}
+		w.Write(jsonResp)
+		return
 	}
 	return
 }
 
 func UpdateHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
-		tasks := database.ListTask()
-		for i,v := range tasks {
-			fmt.Fprintf(w, "Tasks %d: %s \t description: %s \n", i, v.Name, v.Description)
-		}
+		database.UpdateTask(10, "codigo", "developer")
+		w.WriteHeader(200)
+		w.Write([]byte("test"))
 	}
 	return
 }
@@ -69,7 +74,7 @@ func UpdateHandler(w http.ResponseWriter, r *http.Request) {
 func DeleteHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		tasks := database.ListTask()
-		for i,v := range tasks {
+		for i, v := range tasks {
 			fmt.Fprintf(w, "Tasks %d: %s \t description: %s \n", i, v.Name, v.Description)
 		}
 	}
