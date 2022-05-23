@@ -3,9 +3,9 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/google/uuid"
 	"github.com/tonnytg/tasklist/entities"
 	"github.com/tonnytg/tasklist/internal/database"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -17,6 +17,7 @@ func Start() {
 	http.HandleFunc("/api/tasks/add", CreateHandler)
 	http.HandleFunc("/api/tasks/update", UpdateHandler)
 	http.HandleFunc("/api/tasks/delete/{id}", DeleteHandler)
+	http.HandleFunc("/api/tasks/delete/all", DeleteAllHandler)
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -31,8 +32,23 @@ func Start() {
 func ListHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 		tasks := database.ListTask()
-		for i, v := range tasks {
-			fmt.Fprintf(w, "Tasks %d: %s \t description: %s \n", i, v.Name, v.Description)
+		for _, v := range tasks {
+
+			// fTask contains information from task to convert to json
+			fTask := struct {
+				Full    string `json:"full"`
+				Task   entities.Task `json:"task"`
+			}{}
+			fTask.Full = fmt.Sprintf("TaskID %d - %s - Status: %s",
+				v.ID, v.Name, v.ConvertTaskStatus())
+			fTask.Task = v
+
+			jsonResp, err := json.Marshal(fTask)
+			if err != nil {
+				log.Fatalf("Error happened in JSON marshal list tasks. Err: %s", err)
+			}
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(jsonResp)
 		}
 	}
 	return
@@ -41,23 +57,42 @@ func ListHandler(w http.ResponseWriter, r *http.Request) {
 func CreateHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 
-		//createAt := time.Now().Format("2006-01-02")
-		uuid, _ := uuid.NewRandom()
-		name := fmt.Sprintf("TestTask-%s", uuid)
-		task := entities.Task{Name: name, Description: "Task criada para teste", Status: true}
+		// Example time format without millisecond if you needed
+		// createAt := time.Now().Format("2006-01-02")
 
-		// Save at database
-		database.CreateTask(task.Name, task.Description, task.Status)
-		w.WriteHeader(http.StatusOK)
-		w.Header().Set("Content-Type", "application/json")
-		resp := make(map[string]string)
-		resp["message"] = "Status OK"
-		jsonResp, err := json.Marshal(resp)
+		reader, err := io.ReadAll(r.Body)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		var t entities.Task
+
+		json.Unmarshal(reader, &t)
+		task := entities.Task{Name: t.Name, Description: t.Description, Status: t.Status}
+		jsonRespTask, err := json.Marshal(t)
 		if err != nil {
 			log.Fatalf("Error happened in JSON marshal. Err: %s", err)
 		}
-		w.Write(jsonResp)
-		return
+
+		// Save at database
+		err = database.CreateTask(task.Name, task.Description, task.Status)
+		if err != nil {
+			w.Header().Set("Content-Type", "application/json")
+			resp := make(map[string]string)
+			resp["message"] = "Status Failed"
+			jsonRespStatus, _ := json.Marshal(resp)
+			w.Write(jsonRespStatus)
+			return
+		}
+
+		resp := make(map[string]string)
+		resp["message"] = "Status OK"
+		jsonRespStatus, _ := json.Marshal(resp)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		w.Write(jsonRespTask)
+		w.Write(jsonRespStatus)
 	}
 	return
 }
@@ -77,6 +112,15 @@ func DeleteHandler(w http.ResponseWriter, r *http.Request) {
 		for i, v := range tasks {
 			fmt.Fprintf(w, "Tasks %d: %s \t description: %s \n", i, v.Name, v.Description)
 		}
+	}
+	return
+}
+
+func DeleteAllHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "GET" {
+		database.DeleteAllTasks()
+
+		fmt.Fprintf(w, "Done")
 	}
 	return
 }

@@ -1,6 +1,7 @@
 package database
 
 import (
+	"github.com/google/uuid"
 	"github.com/tonnytg/tasklist/entities"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -16,16 +17,21 @@ func init() {
 	db.AutoMigrate(&entities.Task{})
 }
 
-func CreateTask(name string, description string, status bool) {
+func CreateTask(name string, description string, status int) error {
+
+	hash := uuid.NewString() // generate a unique hash to task
+
 	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
 	if err != nil {
 		panic("func create failed to connect database")
 	}
-	db.Create(&entities.Task{
+	tx := db.Create(&entities.Task{
+		Hash:        hash,
 		Name:        name,
 		Description: description,
 		Status:      status,
 	})
+	return tx.Error
 }
 
 func GetTask(ID int32) entities.Task {
@@ -60,4 +66,16 @@ func UpdateTask(ID int32, name string, description string) {
 	task.Name = name
 	task.Description = description
 	db.Save(&task)
+}
+
+func DeleteAllTasks() {
+	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+	if err != nil {
+		panic("func create failed to connect database")
+	}
+
+	db.Where("status = ?", entities.StatusDone).Delete(&entities.Task{})
+	db.Where("status = ?", entities.StatusCanceled).Delete(&entities.Task{})
+	db.Where("status = ?", entities.StatusDoing).Delete(&entities.Task{})
+	db.Where("status = ?", entities.StatusBacklog).Delete(&entities.Task{})
 }
