@@ -17,7 +17,7 @@ func init() {
 	db.AutoMigrate(&entities.Task{})
 }
 
-func CreateTask(name string, description string, status int) error {
+func CreateTask(name string, description string, status int) (entities.Task, error) {
 
 	hash := uuid.NewString() // generate a unique hash to task
 
@@ -25,13 +25,16 @@ func CreateTask(name string, description string, status int) error {
 	if err != nil {
 		panic("func create failed to connect database")
 	}
-	tx := db.Create(&entities.Task{
+
+	t := entities.Task{
 		Hash:        hash,
 		Name:        name,
 		Description: description,
 		Status:      status,
-	})
-	return tx.Error
+	}
+
+	tx := db.Create(&t)
+	return t ,tx.Error
 }
 
 func GetTask(ID int32) entities.Task {

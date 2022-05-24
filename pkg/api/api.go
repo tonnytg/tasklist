@@ -66,16 +66,11 @@ func CreateHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var t entities.Task
-
 		json.Unmarshal(reader, &t)
 		task := entities.Task{Name: t.Name, Description: t.Description, Status: t.Status}
-		jsonRespTask, err := json.Marshal(t)
-		if err != nil {
-			log.Fatalf("Error happened in JSON marshal. Err: %s", err)
-		}
 
 		// Save at database
-		err = database.CreateTask(task.Name, task.Description, task.Status)
+		t, err = database.CreateTask(task.Name, task.Description, task.Status)
 		if err != nil {
 			w.Header().Set("Content-Type", "application/json")
 			resp := make(map[string]string)
@@ -83,6 +78,12 @@ func CreateHandler(w http.ResponseWriter, r *http.Request) {
 			jsonRespStatus, _ := json.Marshal(resp)
 			w.Write(jsonRespStatus)
 			return
+		}
+
+		// receive task from database
+		jsonRespTask, err := json.Marshal(t)
+		if err != nil {
+			log.Fatalf("Error happened in JSON marshal. Err: %s", err)
 		}
 
 		resp := make(map[string]string)
