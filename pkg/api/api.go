@@ -14,6 +14,7 @@ import (
 func Start() {
 
 	http.HandleFunc("/api/tasks", ListHandler)
+	http.HandleFunc("/api/tasks/", GetHandler)
 	http.HandleFunc("/api/tasks/add", CreateHandler)
 	http.HandleFunc("/api/tasks/update", UpdateHandler)
 	http.HandleFunc("/api/tasks/delete/{id}", DeleteHandler)
@@ -50,6 +51,38 @@ func ListHandler(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "application/json")
 			w.Write(jsonResp)
 		}
+	}
+	return
+}
+
+func GetHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "GET" {
+
+
+		// convert url query to variable
+
+		body := r.URL.Query().Get("id")
+
+		var task entities.Task
+
+		t := database.GetTask(task.ID)
+
+		// fTask contains information from task to convert to json
+		fTask := struct {
+			Full    string `json:"full"`
+			Task   entities.Task `json:"task"`
+		}{}
+		fTask.Full = fmt.Sprintf("TaskID %d - %s - Status: %s",
+			t.ID, t.Name, t.ConvertTaskStatus())
+		fTask.Task = t
+
+		jsonResp, err := json.Marshal(fTask)
+		if err != nil {
+			log.Fatalf("Error happened in JSON marshal list tasks. Err: %s", err)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonResp)
+
 	}
 	return
 }

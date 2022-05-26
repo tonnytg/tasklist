@@ -1,6 +1,7 @@
 package database
 
 import (
+	"fmt"
 	"github.com/google/uuid"
 	"github.com/tonnytg/tasklist/entities"
 	"gorm.io/driver/sqlite"
@@ -37,7 +38,7 @@ func CreateTask(name string, description string, status int) (entities.Task, err
 	return t ,tx.Error
 }
 
-func GetTask(ID int32) entities.Task {
+func GetTask(ID uint16) entities.Task {
 	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
 	if err != nil {
 		panic("func create failed to connect database")
@@ -45,6 +46,7 @@ func GetTask(ID int32) entities.Task {
 
 	tempTask := entities.Task{}
 	db.First(&tempTask, ID)
+	fmt.Println("Achei", tempTask)
 	return tempTask
 }
 
@@ -59,7 +61,7 @@ func ListTask() []entities.Task {
 	return tempTask
 }
 
-func UpdateTask(ID int32, name string, description string) {
+func UpdateTask(ID uint16, name string, description string) {
 	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
 	if err != nil {
 		panic("func create failed to connect database")
