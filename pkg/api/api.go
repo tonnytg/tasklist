@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 )
 
 func Start() {
@@ -58,14 +59,11 @@ func ListHandler(w http.ResponseWriter, r *http.Request) {
 func GetHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 
-
 		// convert url query to variable
+		id := r.URL.Query().Get("id")
+		searchID, err := strconv.ParseUint(id, 10, 16)
 
-		body := r.URL.Query().Get("id")
-
-		var task entities.Task
-
-		t := database.GetTask(task.ID)
+		t := database.GetTask(searchID)
 
 		// fTask contains information from task to convert to json
 		fTask := struct {
