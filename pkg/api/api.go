@@ -61,9 +61,13 @@ func GetHandler(w http.ResponseWriter, r *http.Request) {
 
 		// convert url query to variable
 		id := r.URL.Query().Get("id")
-		searchID, err := strconv.ParseUint(id, 10, 16)
 
-		t := database.GetTask(searchID)
+		// convert string to uint64
+		tmpSearchID, err := strconv.ParseUint(id, 16, 16)
+		// convert uint64 to uint16
+		searchID := uint16(tmpSearchID)
+
+		t := database.GetTask(uint16(searchID))
 
 		// fTask contains information from task to convert to json
 		fTask := struct {
