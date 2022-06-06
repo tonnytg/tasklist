@@ -15,7 +15,7 @@ import (
 func Start() {
 
 	http.HandleFunc("/api/tasks", ListHandler)
-	http.HandleFunc("/api/tasks/", GetHandler)
+	http.HandleFunc("/api/task", GetHandler)
 	http.HandleFunc("/api/tasks/add", CreateHandler)
 	http.HandleFunc("/api/tasks/update", UpdateHandler)
 	http.HandleFunc("/api/tasks/delete/{id}", DeleteHandler)
@@ -84,7 +84,6 @@ func GetHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonResp)
-
 	}
 	return
 }
