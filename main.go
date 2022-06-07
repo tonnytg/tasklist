@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/tonnytg/tasklist/pkg/api"
+	"github.com/tonnytg/tasklist/pkg/cmd"
 )
 
 func main() {
 	fmt.Println("Tasklist with Go")
 
-	// Start API to listening
-	api.Start()
+	// Start cmd
+	cmd.Cmd()
 }
