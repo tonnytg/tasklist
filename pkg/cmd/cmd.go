@@ -3,6 +3,8 @@ package cmd
 import (
 	"flag"
 	"fmt"
+	"github.com/tonnytg/tasklist/internal/daemon"
+	"github.com/tonnytg/tasklist/pkg/api"
 )
 
 const ManHelp string = `
@@ -14,10 +16,9 @@ Hello friend maybe you need some help!
 
 --option <VALUE>
 	at this case VALUE can be:
-		knife
-		sword
-		magic
-	Example: ./script --option sword`
+		api
+		daemon
+	Example: ./script --option webserver`
 
 
 
@@ -32,5 +33,12 @@ func Cmd() {
 		fmt.Println(ManHelp)
 	}
 
-	fmt.Println("option selected:", *option)
+	switch *option {
+	case "api":
+		// Start API Server
+		api.Start()
+	case "daemon":
+		// Start Daemon Server
+		daemon.Start()
+	}
 }
