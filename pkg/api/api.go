@@ -3,13 +3,14 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/tonnytg/tasklist/entities"
-	"github.com/tonnytg/tasklist/internal/database"
 	"io"
 	"log"
 	"net/http"
 	"os"
 	"strconv"
+
+	"github.com/tonnytg/tasklist/entities"
+	"github.com/tonnytg/tasklist/internal/database"
 )
 
 func Start() {
@@ -34,24 +35,31 @@ func Start() {
 func ListHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 		tasks := database.ListTask()
+
+		TasksStruct := []struct {
+			Full string        `json:"full"`
+			Task entities.Task `json:"task"`
+		}{}
+
 		for _, v := range tasks {
 
 			// fTask contains information from task to convert to json
 			fTask := struct {
-				Full    string `json:"full"`
-				Task   entities.Task `json:"task"`
+				Full string        `json:"full"`
+				Task entities.Task `json:"task"`
 			}{}
 			fTask.Full = fmt.Sprintf("TaskID %d - %s - Status: %s",
 				v.ID, v.Name, v.ConvertTaskStatus())
 			fTask.Task = v
 
-			jsonResp, err := json.Marshal(fTask)
-			if err != nil {
-				log.Fatalf("Error happened in JSON marshal list tasks. Err: %s", err)
-			}
-			w.Header().Set("Content-Type", "application/json")
-			w.Write(jsonResp)
+			TasksStruct = append(TasksStruct, fTask)
 		}
+		jsonResp, err := json.Marshal(TasksStruct)
+		if err != nil {
+			log.Fatalf("Error happened in JSON marshal list tasks. Err: %s", err)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonResp)
 	}
 	return
 }
@@ -71,8 +79,8 @@ func GetHandler(w http.ResponseWriter, r *http.Request) {
 
 		// fTask contains information from task to convert to json
 		fTask := struct {
-			Full    string `json:"full"`
-			Task   entities.Task `json:"task"`
+			Full string        `json:"full"`
+			Task entities.Task `json:"task"`
 		}{}
 		fTask.Full = fmt.Sprintf("TaskID %d - %s - Status: %s",
 			t.ID, t.Name, t.ConvertTaskStatus())
