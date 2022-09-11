@@ -23,7 +23,9 @@ Hello friend maybe you need some help!
 		daemon
 	Example: ./script --option webserver
 
---add "TASK Title"`
+--add "TASK Title"
+--description "TASK Description"
+--list`
 
 func Cmd() {
 

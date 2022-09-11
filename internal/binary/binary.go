@@ -1,12 +1,13 @@
 package binary
 
 import (
-	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/tonnytg/tasklist/entities"
 )
 
 func WebGet() {
@@ -16,17 +17,15 @@ func WebGet() {
 	}
 	defer resp.Body.Close()
 
-	// Print the HTTP response status.
-	fmt.Println("Response status:", resp.Status)
-
-	// Print the first 5 lines of the response body.
-	scanner := bufio.NewScanner(resp.Body)
-	for i := 0; scanner.Scan() && i < 5; i++ {
-		fmt.Println(scanner.Text())
+	type Tasks []struct {
+		Full string        `json:"full"`
+		Task entities.Task `json:"task"`
 	}
 
-	if err := scanner.Err(); err != nil {
-		panic(err)
+	ts := Tasks{}
+	json.NewDecoder(resp.Body).Decode(&ts)
+	for i, v := range ts {
+		fmt.Printf("[%d] - %s:\t %s\n", i, v.Task.Name, v.Task.Description)
 	}
 }
 
