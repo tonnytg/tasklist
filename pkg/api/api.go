@@ -15,6 +15,15 @@ import (
 
 func Start() {
 
+	fmt.Printf(`
+/api/tasks
+/api/task
+/api/tasks/add
+/api/tasks/update
+/api/tasks/delete/{id}
+/api/tasks/delete/all
+`)
+
 	http.HandleFunc("/api/tasks", ListHandler)
 	http.HandleFunc("/api/task", GetHandler)
 	http.HandleFunc("/api/tasks/add", CreateHandler)
