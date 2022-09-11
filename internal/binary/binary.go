@@ -2,11 +2,14 @@ package binary
 
 import (
 	"bufio"
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 )
 
-func WebRequest() {
+func WebGet() {
 	resp, err := http.Get("http://localhost:9000/api/tasks")
 	if err != nil {
 		panic(err)
@@ -27,13 +30,37 @@ func WebRequest() {
 	}
 }
 
-func Create() {
+func WebPost(name string, description string) {
+
+	values := map[string]string{"Name": name, "Description": description}
+	json_data, err := json.Marshal(values)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	resp, err := http.Post("http://localhost:9000/api/tasks/add", "application/json",
+		bytes.NewBuffer(json_data))
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var res map[string]interface{}
+
+	json.NewDecoder(resp.Body).Decode(&res)
+
+	fmt.Println(res["json"])
+}
+
+func Create(data string, description string) {
 	fmt.Println("Created Task")
+	WebPost(data, description)
 }
 
 func List() {
 	fmt.Println("Listed Tasks")
-	WebRequest()
+	WebGet()
 }
 
 func Update() {

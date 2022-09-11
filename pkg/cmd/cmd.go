@@ -34,6 +34,7 @@ func Cmd() {
 
 	option := flag.String("option", "", "--option <VALUE>")
 	add := flag.String("add", "", "--add <VALUE>")
+	description := flag.String("description", "", "--description <VALUE>")
 	list := flag.Bool("list", false, "--list")
 	help := flag.Bool("help", false, "--help")
 
@@ -44,7 +45,7 @@ func Cmd() {
 	}
 
 	if *add != "" {
-		binary.Create()
+		binary.Create(*add, *description)
 	}
 
 	if *list != false {

@@ -13,7 +13,7 @@ const (
 )
 
 type Task struct {
-	ID          uint16      `json:"id"`
+	ID          uint16    `json:"id"`
 	Hash        string    `json:"hash"`
 	Name        string    `json:"name"`
 	Description string    `json:"description"`

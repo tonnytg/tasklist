@@ -35,7 +35,7 @@ func CreateTask(name string, description string, status int) (entities.Task, err
 	}
 
 	tx := db.Create(&t)
-	return t ,tx.Error
+	return t, tx.Error
 }
 
 func GetTask(ID uint16) entities.Task {
