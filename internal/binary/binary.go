@@ -24,9 +24,15 @@ func WebGet() {
 
 	ts := Tasks{}
 	json.NewDecoder(resp.Body).Decode(&ts)
+	var count int
 	for i, v := range ts {
 		fmt.Printf("[%d] - %s:\t %s\n", i, v.Task.Name, v.Task.Description)
+		count++
 	}
+	if count == 0 {
+		fmt.Println("No tasks found")
+	}
+
 }
 
 func WebPost(name string, description string) {
@@ -58,7 +64,7 @@ func Create(data string, description string) {
 }
 
 func List() {
-	fmt.Println("Listed Tasks")
+	fmt.Println("List Tasks:")
 	WebGet()
 }
 
