@@ -6,3 +6,8 @@ type List struct {
 	Name     string
 	Tasks    []Task
 }
+
+func NewList() List {
+	l := List{}
+	return l
+}
