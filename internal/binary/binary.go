@@ -67,11 +67,3 @@ func List() {
 	fmt.Println("List Tasks:")
 	WebGet()
 }
-
-func Update() {
-	fmt.Println("Updated Task")
-}
-
-func Delete() {
-	fmt.Println("Deleted Task")
-}

@@ -20,8 +20,7 @@ func Start() {
 	go func() {
 
 		sig := <-sigs
-		fmt.Println()
-		fmt.Println(sig)
+		fmt.Println("Signal Received:", sig)
 		done <- true
 	}()
 
