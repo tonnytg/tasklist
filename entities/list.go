@@ -7,7 +7,7 @@ type List struct {
 	Tasks    []Task
 }
 
-func NewList() List {
+func NewList() *List {
 	l := List{}
-	return l
+	return &l
 }

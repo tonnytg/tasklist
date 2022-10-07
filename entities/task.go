@@ -37,7 +37,7 @@ func (t Task) ConvertTaskStatus() string {
 	return ""
 }
 
-func NewTask() Task {
+func NewTask() *Task {
 	t := Task{}
-	return t
+	return &t
 }
