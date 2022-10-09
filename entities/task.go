@@ -5,7 +5,6 @@ import (
 	"time"
 )
 
-// status code
 const (
 	StatusBacklog  = 0 // Task in backlog
 	StatusDoing    = 2 // Task moved from backlog to doing
@@ -40,22 +39,8 @@ type TaskInterface interface {
 func NewTask() *Task {
 	t := Task{}
 	t.Hash = uuid.NewString()
+	t.Status = BACKLOG
 	return &t
-}
-
-// ConvertTaskStatus translate status from code to string
-func (t *Task) ConvertTaskStatus() string {
-	switch t.Status {
-	case "0":
-		return "Backlog"
-	case "1":
-		return "Doing"
-	case "2":
-		return "Done"
-	case "3":
-		return "Canceled"
-	}
-	return ""
 }
 
 func (t *Task) GetTask() *Task {
