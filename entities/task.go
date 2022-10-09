@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"github.com/google/uuid"
 	"time"
 )
 
@@ -10,6 +11,12 @@ const (
 	StatusDoing    = 2 // Task moved from backlog to doing
 	StatusDone     = 1 // Task finished
 	StatusCanceled = 3 // Task canceled
+
+	BACKLOG  = "backlog"
+	DOING    = "doing"
+	DONE     = "done"
+	CANCELED = "canceled"
+	EMPTY    = "empty"
 )
 
 type Task struct {
@@ -17,27 +24,56 @@ type Task struct {
 	Hash        string    `json:"hash"`
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
-	Status      int       `json:"status"`
+	Status      string       `json:"status"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
+type TaskInterface interface {
+	GetTask() *Task
+	GetID() uint16
+	GetStatus() string
+	GetHash() string
+	GetName() string
+}
+
+func NewTask() *Task {
+	t := Task{}
+	t.Hash = uuid.NewString()
+	return &t
+}
+
 // ConvertTaskStatus translate status from code to string
-func (t Task) ConvertTaskStatus() string {
+func (t *Task) ConvertTaskStatus() string {
 	switch t.Status {
-	case 0:
+	case "0":
 		return "Backlog"
-	case 1:
+	case "1":
 		return "Doing"
-	case 2:
+	case "2":
 		return "Done"
-	case 3:
+	case "3":
 		return "Canceled"
 	}
 	return ""
 }
 
-func NewTask() *Task {
-	t := Task{}
-	return &t
+func (t *Task) GetTask() *Task {
+	return t
+}
+
+func (t *Task) GetStatus() string {
+	return t.Status
+}
+
+func (t *Task) GetID() uint16 {
+	return t.ID
+}
+
+func (t *Task) GetHash() string {
+	return t.Hash
+}
+
+func (t *Task) GetName() string {
+	return t.Name
 }
