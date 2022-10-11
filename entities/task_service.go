@@ -11,3 +11,15 @@ func (s *TaskService) Get(ID uint16) (TaskInterface, error) {
 	}
 	return task, nil
 }
+
+func (s *TaskService) Create(name string, description string) (TaskInterface, error) {
+	task := NewTask()
+	task.SetName(name)
+	task.SetDescription(description)
+
+	result, err := s.Persistence.Save(task)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}

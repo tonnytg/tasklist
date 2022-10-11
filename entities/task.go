@@ -56,6 +56,7 @@ type Task struct {
 func NewTask() *Task {
 	t := Task{}
 	t.Hash = uuid.NewString()
+	t.Status = BACKLOG
 	return &t
 }
 
