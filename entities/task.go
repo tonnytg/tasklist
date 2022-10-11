@@ -2,6 +2,7 @@ package entities
 
 import (
 	"github.com/google/uuid"
+	"strconv"
 	"time"
 )
 
@@ -63,7 +64,8 @@ func (t *Task) GetID() uint16 {
 }
 
 func (t *Task) GetIDString() string {
-	return string(t.ID)
+	i := strconv.Itoa(int(t.ID))
+	return i
 }
 
 func (t *Task) GetHash() string {
