@@ -34,6 +34,20 @@ func (m *MockTaskInterface) EXPECT() *MockTaskInterfaceMockRecorder {
 	return m.recorder
 }
 
+// GetDescription mocks base method.
+func (m *MockTaskInterface) GetDescription() string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetDescription")
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// GetDescription indicates an expected call of GetDescription.
+func (mr *MockTaskInterfaceMockRecorder) GetDescription() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDescription", reflect.TypeOf((*MockTaskInterface)(nil).GetDescription))
+}
+
 // GetHash mocks base method.
 func (m *MockTaskInterface) GetHash() string {
 	m.ctrl.T.Helper()
@@ -76,6 +90,34 @@ func (mr *MockTaskInterfaceMockRecorder) GetIDString() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetIDString", reflect.TypeOf((*MockTaskInterface)(nil).GetIDString))
 }
 
+// GetName mocks base method.
+func (m *MockTaskInterface) GetName() string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetName")
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// GetName indicates an expected call of GetName.
+func (mr *MockTaskInterfaceMockRecorder) GetName() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetName", reflect.TypeOf((*MockTaskInterface)(nil).GetName))
+}
+
+// GetStatus mocks base method.
+func (m *MockTaskInterface) GetStatus() string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetStatus")
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// GetStatus indicates an expected call of GetStatus.
+func (mr *MockTaskInterfaceMockRecorder) GetStatus() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetStatus", reflect.TypeOf((*MockTaskInterface)(nil).GetStatus))
+}
+
 // SetDescription mocks base method.
 func (m *MockTaskInterface) SetDescription(description string) {
 	m.ctrl.T.Helper()
@@ -86,6 +128,18 @@ func (m *MockTaskInterface) SetDescription(description string) {
 func (mr *MockTaskInterfaceMockRecorder) SetDescription(description interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetDescription", reflect.TypeOf((*MockTaskInterface)(nil).SetDescription), description)
+}
+
+// SetID mocks base method.
+func (m *MockTaskInterface) SetID(ID uint16) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "SetID", ID)
+}
+
+// SetID indicates an expected call of SetID.
+func (mr *MockTaskInterfaceMockRecorder) SetID(ID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetID", reflect.TypeOf((*MockTaskInterface)(nil).SetID), ID)
 }
 
 // SetName mocks base method.
