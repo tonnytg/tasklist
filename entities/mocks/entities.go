@@ -219,11 +219,12 @@ func (mr *MockTaskServiceInterfaceMockRecorder) Delete(ID interface{}) *gomock.C
 }
 
 // Get mocks base method.
-func (m *MockTaskServiceInterface) Get(ID uint16) entities.Task {
+func (m *MockTaskServiceInterface) Get(ID uint16) (entities.Task, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Get", ID)
 	ret0, _ := ret[0].(entities.Task)
-	return ret0
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // Get indicates an expected call of Get.
@@ -233,17 +234,18 @@ func (mr *MockTaskServiceInterfaceMockRecorder) Get(ID interface{}) *gomock.Call
 }
 
 // Update mocks base method.
-func (m *MockTaskServiceInterface) Update(ID uint16, name, description string) error {
+func (m *MockTaskServiceInterface) Update(ID uint16, name, description, status string) (entities.Task, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", ID, name, description)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret := m.ctrl.Call(m, "Update", ID, name, description, status)
+	ret0, _ := ret[0].(entities.Task)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // Update indicates an expected call of Update.
-func (mr *MockTaskServiceInterfaceMockRecorder) Update(ID, name, description interface{}) *gomock.Call {
+func (mr *MockTaskServiceInterfaceMockRecorder) Update(ID, name, description, status interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockTaskServiceInterface)(nil).Update), ID, name, description)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockTaskServiceInterface)(nil).Update), ID, name, description, status)
 }
 
 // MockTaskReader is a mock of TaskReader interface.
