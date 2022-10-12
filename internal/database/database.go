@@ -88,7 +88,8 @@ func NewTaskDb(db *sql.DB) *TaskDb {
 
 func (t *TaskDb) Get(ID uint16) (entities.TaskInterface, error) {
 	var task entities.Task
-	stmt, err := t.db.Prepare("select id, name, description, status from tasks where id = ?")
+	selectQuery := `select id, name, description, status from tasks where id = ?`
+	stmt, err := t.db.Prepare(selectQuery)
 	if err != nil {
 		return nil, err
 	}
@@ -97,4 +98,64 @@ func (t *TaskDb) Get(ID uint16) (entities.TaskInterface, error) {
 		return nil, err
 	}
 	return &task, nil
+}
+
+func (t *TaskDb) Save(task entities.TaskInterface) (entities.TaskInterface, error) {
+	var rows int
+	t.db.QueryRow("SELECT id FROM tasks WHERE id = ?", task.GetID()).Scan(&rows)
+	if rows == 0 {
+		_, err := t.create(task)
+		if err != nil {
+			return nil, err
+		}
+	}
+	_, err := t.update(task)
+	if err != nil {
+		return nil, err
+	}
+	return task, nil
+}
+
+func (t *TaskDb) create(task entities.TaskInterface) (entities.TaskInterface, error) {
+	insertQuery := `insert into tasks (id, name, description, status) values (?, ?, ?, ?)`
+	stmt, err := t.db.Prepare(insertQuery)
+	if err != nil {
+		return nil, err
+	}
+	_, err = stmt.Exec(
+		task.GetID(),
+		task.GetName(),
+		task.GetDescription(),
+		task.GetStatus(),
+	)
+	if err != nil {
+		return nil, err
+	}
+	err = stmt.Close()
+	if err != nil {
+		return nil, err
+	}
+	return task, nil
+}
+
+func (t *TaskDb) update(task entities.TaskInterface) (entities.TaskInterface, error) {
+	updateQuery := `update tasks set name = ?, description = ?, status = ? where id = ?`
+	stmt, err := t.db.Prepare(updateQuery)
+	if err != nil {
+		return nil, err
+	}
+	_, err = stmt.Exec(
+		task.GetName(),
+		task.GetDescription(),
+		task.GetStatus(),
+		task.GetID(),
+	)
+	if err != nil {
+		return nil, err
+	}
+	err = stmt.Close()
+	if err != nil {
+		return nil, err
+	}
+	return task, nil
 }
