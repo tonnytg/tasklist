@@ -2,6 +2,7 @@ package database_test
 
 import (
 	"database/sql"
+	"github.com/tonnytg/tasklist/entities"
 	"github.com/tonnytg/tasklist/internal/database"
 	"log"
 	"testing"
@@ -36,7 +37,7 @@ func createTask(db *sql.DB) {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-	stmt.Exec(1, "Task 1", "Description 1", "Doing")
+	stmt.Exec(1, "Task 1", "Description 1", entities.BACKLOG)
 }
 
 func TestTaskDb_Get(t *testing.T) {
@@ -50,7 +51,36 @@ func TestTaskDb_Get(t *testing.T) {
 	if task.GetName() != "Task 1" {
 		t.Error("Error on get task")
 	}
-	if task.GetStatus() != "Doing" {
+	if task.GetStatus() != entities.BACKLOG {
 		t.Error("Error on get task")
+	}
+}
+
+func TestTaskDb_Save(t *testing.T) {
+	setUp()
+	defer Db.Close()
+	taskDb := database.NewTaskDb(Db)
+	task := entities.NewTask()
+	task.SetName("Task 1")
+	task.SetStatus(entities.DOING)
+	task.SetDescription("Description 1")
+	result, err := taskDb.Save(task)
+	if err != nil {
+		t.Error("Error on save task", err)
+	}
+	if result.GetName() != "Task 1" {
+		t.Error("Error on save task, name is not equal")
+	}
+	if result.GetStatus() != entities.DOING {
+		t.Error("Error on save task, status is not equal")
+	}
+
+	task.SetStatus(entities.DONE)
+	result, err = taskDb.Save(task)
+	if err != nil {
+		t.Error("Error on save task", err)
+	}
+	if result.GetStatus() != entities.DONE {
+		t.Error("Error on save task")
 	}
 }
