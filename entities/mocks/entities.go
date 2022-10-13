@@ -119,9 +119,11 @@ func (mr *MockTaskInterfaceMockRecorder) GetStatus() *gomock.Call {
 }
 
 // SetDescription mocks base method.
-func (m *MockTaskInterface) SetDescription(description string) {
+func (m *MockTaskInterface) SetDescription(description string) error {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "SetDescription", description)
+	ret := m.ctrl.Call(m, "SetDescription", description)
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // SetDescription indicates an expected call of SetDescription.
@@ -130,10 +132,26 @@ func (mr *MockTaskInterfaceMockRecorder) SetDescription(description interface{})
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetDescription", reflect.TypeOf((*MockTaskInterface)(nil).SetDescription), description)
 }
 
-// SetID mocks base method.
-func (m *MockTaskInterface) SetID(ID uint16) {
+// SetHash mocks base method.
+func (m *MockTaskInterface) SetHash(hash string) error {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "SetID", ID)
+	ret := m.ctrl.Call(m, "SetHash", hash)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SetHash indicates an expected call of SetHash.
+func (mr *MockTaskInterfaceMockRecorder) SetHash(hash interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetHash", reflect.TypeOf((*MockTaskInterface)(nil).SetHash), hash)
+}
+
+// SetID mocks base method.
+func (m *MockTaskInterface) SetID(ID uint16) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SetID", ID)
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // SetID indicates an expected call of SetID.
@@ -143,9 +161,11 @@ func (mr *MockTaskInterfaceMockRecorder) SetID(ID interface{}) *gomock.Call {
 }
 
 // SetName mocks base method.
-func (m *MockTaskInterface) SetName(name string) {
+func (m *MockTaskInterface) SetName(name string) error {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "SetName", name)
+	ret := m.ctrl.Call(m, "SetName", name)
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // SetName indicates an expected call of SetName.
@@ -155,9 +175,11 @@ func (mr *MockTaskInterfaceMockRecorder) SetName(name interface{}) *gomock.Call 
 }
 
 // SetStatus mocks base method.
-func (m *MockTaskInterface) SetStatus(status string) {
+func (m *MockTaskInterface) SetStatus(status string) error {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "SetStatus", status)
+	ret := m.ctrl.Call(m, "SetStatus", status)
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // SetStatus indicates an expected call of SetStatus.
@@ -190,10 +212,10 @@ func (m *MockTaskServiceInterface) EXPECT() *MockTaskServiceInterfaceMockRecorde
 }
 
 // Create mocks base method.
-func (m *MockTaskServiceInterface) Create(name, description, status string) (entities.Task, error) {
+func (m *MockTaskServiceInterface) Create(name, description, status string) (entities.TaskInterface, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", name, description, status)
-	ret0, _ := ret[0].(entities.Task)
+	ret0, _ := ret[0].(entities.TaskInterface)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -204,48 +226,34 @@ func (mr *MockTaskServiceInterfaceMockRecorder) Create(name, description, status
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockTaskServiceInterface)(nil).Create), name, description, status)
 }
 
-// Delete mocks base method.
-func (m *MockTaskServiceInterface) Delete(ID uint16) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Delete", ID)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Delete indicates an expected call of Delete.
-func (mr *MockTaskServiceInterfaceMockRecorder) Delete(ID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockTaskServiceInterface)(nil).Delete), ID)
-}
-
 // Get mocks base method.
-func (m *MockTaskServiceInterface) Get(ID uint16) (entities.Task, error) {
+func (m *MockTaskServiceInterface) Get(hash string) (entities.TaskInterface, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Get", ID)
-	ret0, _ := ret[0].(entities.Task)
+	ret := m.ctrl.Call(m, "Get", hash)
+	ret0, _ := ret[0].(entities.TaskInterface)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Get indicates an expected call of Get.
-func (mr *MockTaskServiceInterfaceMockRecorder) Get(ID interface{}) *gomock.Call {
+func (mr *MockTaskServiceInterfaceMockRecorder) Get(hash interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockTaskServiceInterface)(nil).Get), ID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockTaskServiceInterface)(nil).Get), hash)
 }
 
 // Update mocks base method.
-func (m *MockTaskServiceInterface) Update(ID uint16, name, description, status string) (entities.Task, error) {
+func (m *MockTaskServiceInterface) Update(hash, name, description, status string) (entities.TaskInterface, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", ID, name, description, status)
-	ret0, _ := ret[0].(entities.Task)
+	ret := m.ctrl.Call(m, "Update", hash, name, description, status)
+	ret0, _ := ret[0].(entities.TaskInterface)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Update indicates an expected call of Update.
-func (mr *MockTaskServiceInterfaceMockRecorder) Update(ID, name, description, status interface{}) *gomock.Call {
+func (mr *MockTaskServiceInterfaceMockRecorder) Update(hash, name, description, status interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockTaskServiceInterface)(nil).Update), ID, name, description, status)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockTaskServiceInterface)(nil).Update), hash, name, description, status)
 }
 
 // MockTaskReader is a mock of TaskReader interface.
@@ -272,18 +280,18 @@ func (m *MockTaskReader) EXPECT() *MockTaskReaderMockRecorder {
 }
 
 // Get mocks base method.
-func (m *MockTaskReader) Get(ID uint16) (entities.TaskInterface, error) {
+func (m *MockTaskReader) Get(hash string) (entities.TaskInterface, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Get", ID)
+	ret := m.ctrl.Call(m, "Get", hash)
 	ret0, _ := ret[0].(entities.TaskInterface)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Get indicates an expected call of Get.
-func (mr *MockTaskReaderMockRecorder) Get(ID interface{}) *gomock.Call {
+func (mr *MockTaskReaderMockRecorder) Get(hash interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockTaskReader)(nil).Get), ID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockTaskReader)(nil).Get), hash)
 }
 
 // MockTaskWriter is a mock of TaskWriter interface.
@@ -348,18 +356,18 @@ func (m *MockTaskPersistenceInterface) EXPECT() *MockTaskPersistenceInterfaceMoc
 }
 
 // Get mocks base method.
-func (m *MockTaskPersistenceInterface) Get(ID uint16) (entities.TaskInterface, error) {
+func (m *MockTaskPersistenceInterface) Get(hash string) (entities.TaskInterface, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Get", ID)
+	ret := m.ctrl.Call(m, "Get", hash)
 	ret0, _ := ret[0].(entities.TaskInterface)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Get indicates an expected call of Get.
-func (mr *MockTaskPersistenceInterfaceMockRecorder) Get(ID interface{}) *gomock.Call {
+func (mr *MockTaskPersistenceInterfaceMockRecorder) Get(hash interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockTaskPersistenceInterface)(nil).Get), ID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockTaskPersistenceInterface)(nil).Get), hash)
 }
 
 // Save mocks base method.

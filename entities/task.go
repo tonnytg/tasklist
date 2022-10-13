@@ -1,7 +1,9 @@
 package entities
 
 import (
+	"errors"
 	"github.com/google/uuid"
+	"regexp"
 	"strconv"
 	"time"
 )
@@ -16,22 +18,26 @@ const (
 type TaskInterface interface {
 	GetID() uint16
 	GetIDString() string
+	GetName() string
+	GetDescription() string
+	GetStatus() string
 	GetHash() string
-	SetName(name string)
-	SetDescription(description string)
-	SetStatus(status string)
+	SetID(ID uint16) error
+	SetHash(hash string) error
+	SetName(name string) error
+	SetDescription(description string) error
+	SetStatus(status string) error
 }
 
 // TaskServiceInterface orquest the task actions orders
 type TaskServiceInterface interface {
-	Create(name string, description string, status string) (Task, error)
-	Get(ID uint16) Task
-	Update(ID uint16, name string, description string) error
-	Delete(ID uint16) error
+	Create(name string, description string, status string) (TaskInterface, error)
+	Get(hash string) (TaskInterface, error)
+	Update(hash string, name string, description string, status string) (TaskInterface, error)
 }
 
 type TaskReader interface {
-	Get(ID uint16) (TaskInterface, error)
+	Get(hash string) (TaskInterface, error)
 }
 
 type TaskWriter interface {
@@ -73,23 +79,66 @@ func (t *Task) GetHash() string {
 	return t.Hash
 }
 
-func (t *Task) SetName(name string) {
-	t.Name = name
+func (t *Task) GetName() string {
+	return t.Name
 }
 
-func (t *Task) SetDescription(description string) {
-	t.Description = description
+func (t *Task) GetDescription() string {
+	return t.Description
 }
 
-func (t *Task) SetStatus(status string) {
+func (t *Task) GetStatus() string {
+	return t.Status
+}
+
+func (t *Task) SetID(ID uint16) error {
+	t.ID = ID
+	return nil
+}
+
+func (t *Task) SetHash(hash string) error {
+	hashConverted, err := uuid.Parse(hash)
+	if err != nil {
+		return err
+	}
+	if hash == "" {
+		return errors.New("hash is empty")
+	}
+	t.Hash = hashConverted.String()
+	return nil
+}
+
+func (t *Task) SetName(name string) error {
+	regexName := regexp.MustCompile(`^[a-zA-Z0-9_ áàâãéèêíïóôõöúçñ]{1,30}$`)
+	if regexName.MatchString(name) {
+		t.Name = name
+		return nil
+	}
+	return errors.New("name has invalid characters or less than 30 characters")
+}
+
+func (t *Task) SetDescription(description string) error {
+	regexDesc := regexp.MustCompile(`^[a-zA-Z0-9_ áàâãéèêíïóôõöúçñ]{1,50}$`)
+	if regexDesc.MatchString(description) {
+		t.Name = description
+		return nil
+	}
+	return errors.New("description has invalid characters or less than 50 characters")
+}
+
+func (t *Task) SetStatus(status string) error {
 	switch status {
 	case DOING:
 		t.Status = DOING
+		return nil
 	case DONE:
 		t.Status = DONE
+		return nil
 	case CANCELED:
 		t.Status = CANCELED
+		return nil
 	default:
 		t.Status = BACKLOG
 	}
+	return errors.New("status is invalid")
 }
