@@ -120,7 +120,7 @@ func (t *Task) SetName(name string) error {
 func (t *Task) SetDescription(description string) error {
 	regexDesc := regexp.MustCompile(`^[a-zA-Z0-9_ áàâãéèêíïóôõöúçñ]{1,50}$`)
 	if regexDesc.MatchString(description) {
-		t.Name = description
+		t.Description = description
 		return nil
 	}
 	return errors.New("description has invalid characters or less than 50 characters")
