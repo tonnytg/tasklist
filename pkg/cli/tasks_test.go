@@ -18,9 +18,7 @@ func TestRun(t *testing.T) {
 	TaskDescription := "TaskDescription"
 	TaskStatus := "backlog"
 
-	// TODO: Add test cases for return error
 	task := entities.Task{}
-	task.SetID(1)
 	task.SetHash(TaskHash)
 	task.SetName(TaskName)
 	task.SetDescription(TaskDescription)
@@ -35,10 +33,31 @@ func TestRun(t *testing.T) {
 	service := mock_entities.NewMockTaskServiceInterface(ctrl)
 	service.EXPECT().Create(task.Name, task.Description, task.Status).Return(TaskMock, nil)
 	service.EXPECT().Get(TaskMock.GetHash()).Return(TaskMock, nil).AnyTimes()
-	service.EXPECT().Update(uint16(0), task.Name, task.Description, task.Status).Return(TaskMock, nil).AnyTimes()
+	service.EXPECT().Update(task.Hash, task.Name, task.Description, task.Status).Return(TaskMock, nil).AnyTimes()
 
+	// Test create
 	resultExpected := fmt.Sprintf("%s: has been created", TaskMock.GetName())
 	result, err := cli.Run(service, "create", task.Hash, task.Name, task.Description, task.Status)
+	if err != nil {
+		t.Error(err)
+	}
+	if result != resultExpected {
+		t.Errorf("expected %s but got %s", resultExpected, result)
+	}
+
+	// Test update
+	resultExpected = fmt.Sprintf("[%s] - %s: has been updated", task.GetHash(), task.GetName())
+	result, err = cli.Run(service, "update", task.Hash, task.Name, task.Description, task.Status)
+	if err != nil {
+		t.Error(err)
+	}
+	if result != resultExpected {
+		t.Errorf("expected %s but got %s", resultExpected, result)
+	}
+
+	// Test get
+	resultExpected = fmt.Sprintf("[%s] - %s: has been found", task.GetHash(), task.GetName())
+	result, err = cli.Run(service, "get", task.Hash, "", "", "")
 	if err != nil {
 		t.Error(err)
 	}

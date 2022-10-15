@@ -29,14 +29,14 @@ func Run(
 		if err != nil {
 			return result, err
 		}
-		result = fmt.Sprintf("[%d] - %s: has been updated", task.GetID(), task.GetName())
+		result = fmt.Sprintf("[%s] - %s: has been updated", task.GetHash(), task.GetName())
 
 	default:
 		task, err := service.Get(TaskHash)
 		if err != nil {
 			return result, err
 		}
-		result = fmt.Sprintf("[%d] - %s: has been updated", task.GetID(), task.GetName())
+		result = fmt.Sprintf("[%s] - %s: has been found", task.GetHash(), task.GetName())
 	}
 	return result, nil
 }
