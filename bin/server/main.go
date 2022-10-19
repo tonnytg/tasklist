@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/tonnytg/tasklist/internal/daemon"
 	"github.com/tonnytg/tasklist/pkg/api"
 	"os"
 )
@@ -34,9 +33,5 @@ func main() {
 	case "api":
 		// Start API Server
 		api.Start()
-	case "daemon":
-		// Start Daemon Server
-		daemon.Start()
 	}
-
 }

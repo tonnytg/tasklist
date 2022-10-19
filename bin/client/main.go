@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/tonnytg/tasklist/internal/binary"
 	"os"
 )
 
@@ -20,9 +19,9 @@ func main() {
 		os.Exit(0)
 	}
 
-	add := flag.String("add", "", "--add <VALUE>")
-	description := flag.String("description", "", "--description <VALUE>")
-	list := flag.Bool("list", false, "--list")
+	//add := flag.String("add", "", "--add <VALUE>")
+	//description := flag.String("description", "", "--description <VALUE>")
+	//list := flag.Bool("list", false, "--list")
 	help := flag.Bool("help", false, "--help")
 
 	flag.Parse()
@@ -30,13 +29,13 @@ func main() {
 	if *help != false {
 		fmt.Println(ClientHelp)
 	}
-
-	if *add != "" {
-		binary.Create(*add, *description)
-	}
-
-	if *list != false {
-		binary.List()
-	}
+	//
+	//if *add != "" {
+	//	binary.Create(*add, *description)
+	//}
+	//
+	//if *list != false {
+	//	binary.List()
+	//}
 
 }
