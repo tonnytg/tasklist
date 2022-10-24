@@ -1,0 +1,12 @@
+### GET request with a header
+GET http://localhost:9000/api/task
+Accept: application/json
+
+### POST request with a header
+POST http://localhost:9000/api/tasks/add
+Content-Type: application/json
+
+{
+  "name": "My task",
+  "description": "This is a task"
+}
