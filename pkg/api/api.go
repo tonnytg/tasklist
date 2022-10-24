@@ -58,7 +58,7 @@ func ListHandler(w http.ResponseWriter, r *http.Request) {
 				Task entities.Task `json:"task"`
 			}{}
 			fTask.Full = fmt.Sprintf("TaskID %d - %s - Status: %s",
-				v.ID, v.Name, v.ConvertTaskStatus())
+				v.ID, v.Name, v.Status)
 			fTask.Task = v
 
 			TasksStruct = append(TasksStruct, fTask)
@@ -92,7 +92,7 @@ func GetHandler(w http.ResponseWriter, r *http.Request) {
 			Task entities.Task `json:"task"`
 		}{}
 		fTask.Full = fmt.Sprintf("TaskID %d - %s - Status: %s",
-			t.ID, t.Name, t.ConvertTaskStatus())
+			t.ID, t.Name, t.Status)
 		fTask.Task = t
 
 		jsonResp, err := json.Marshal(fTask)
