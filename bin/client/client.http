@@ -1,5 +1,5 @@
 ### GET request with a header
-GET http://localhost:9000/api/task
+GET http://localhost:9000/api/tasks
 Accept: application/json
 
 ### POST request with a header
@@ -10,3 +10,15 @@ Content-Type: application/json
   "name": "My task",
   "description": "This is a task"
 }
+
+### DELETE request with a header
+DELETE http://localhost:9000/api/tasks/delete
+Content-Type: application/json
+
+{
+  "hash": "a6cab625-88d8-4e5d-961b-f3fe984066ce"
+}
+
+### DELETE All request with a header
+DELETE http://localhost:9000/api/tasks/delete/all
+Accept: application/json
