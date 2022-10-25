@@ -16,20 +16,21 @@ import (
 func Start() {
 
 	fmt.Printf(`
-/api/tasks
+
 /api/task
-/api/tasks/add
-/api/tasks/update
-/api/tasks/delete/{id}
+/api/task/add
+/api/task/update
+/api/task/delete
+/api/tasks
 /api/tasks/delete/all
 `)
 
-	http.HandleFunc("/api/tasks", ListHandler)
-	http.HandleFunc("/api/task", GetHandler)
-	http.HandleFunc("/api/tasks/add", CreateHandler)
-	http.HandleFunc("/api/tasks/update", UpdateHandler)
-	http.HandleFunc("/api/tasks/delete", DeleteHandler)
-	http.HandleFunc("/api/tasks/delete/all", DeleteAllHandler)
+	http.HandleFunc("/api/task", GetTaskHandler)
+	http.HandleFunc("/api/task/add", CreateTaskHandler)
+	http.HandleFunc("/api/task/update", UpdateTaskHandler)
+	http.HandleFunc("/api/task/delete", DeleteTaksHandler)
+	http.HandleFunc("/api/tasks", ListTasksHandler)
+	http.HandleFunc("/api/tasks/delete/all", DeleteAllTasksHandler)
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -41,9 +42,12 @@ func Start() {
 	}
 }
 
-func ListHandler(w http.ResponseWriter, r *http.Request) {
+func ListTasksHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
-		tasks := database.ListTask()
+		tasks, err := database.ListTask()
+		if err != nil {
+
+		}
 
 		TasksStruct := []struct {
 			Full string        `json:"full"`
@@ -73,7 +77,7 @@ func ListHandler(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func GetHandler(w http.ResponseWriter, r *http.Request) {
+func GetTaskHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 
 		// convert url query to variable
@@ -84,7 +88,10 @@ func GetHandler(w http.ResponseWriter, r *http.Request) {
 		// convert uint64 to uint16
 		searchID := uint16(tmpSearchID)
 
-		t := database.GetTask(uint16(searchID))
+		t, err := database.GetTask(uint16(searchID))
+		if err != nil {
+			fmt.Println(err)
+		}
 
 		// fTask contains information from task to convert to json
 		fTask := struct {
@@ -93,7 +100,7 @@ func GetHandler(w http.ResponseWriter, r *http.Request) {
 		}{}
 		fTask.Full = fmt.Sprintf("TaskID %d - %s - Status: %s",
 			t.ID, t.Name, t.Status)
-		fTask.Task = t
+		fTask.Task = *t
 
 		jsonResp, err := json.Marshal(fTask)
 		if err != nil {
@@ -105,7 +112,7 @@ func GetHandler(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func CreateHandler(w http.ResponseWriter, r *http.Request) {
+func CreateTaskHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 
 		// Example time format without millisecond if you needed
@@ -116,7 +123,7 @@ func CreateHandler(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(err)
 		}
 
-		var t entities.Task
+		var t *entities.Task
 		json.Unmarshal(reader, &t)
 		task := entities.NewTask()
 		task.SetName(t.Name)
@@ -152,7 +159,7 @@ func CreateHandler(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func UpdateHandler(w http.ResponseWriter, r *http.Request) {
+func UpdateTaskHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		database.UpdateTask(10, "codigo", "developer")
 		w.WriteHeader(200)
@@ -161,7 +168,7 @@ func UpdateHandler(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func DeleteHandler(w http.ResponseWriter, r *http.Request) {
+func DeleteTaksHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "DELETE" {
 
 		reader, err := io.ReadAll(r.Body)
@@ -179,7 +186,7 @@ func DeleteHandler(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func DeleteAllHandler(w http.ResponseWriter, r *http.Request) {
+func DeleteAllTasksHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "DELETE" {
 		database.DeleteAllTasks()
 
