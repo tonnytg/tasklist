@@ -18,17 +18,15 @@ func init() {
 	db.AutoMigrate(&entities.Task{})
 }
 
-func CreateTask(name string, description string, status string) (entities.Task, error) {
+func CreateTask(task entities.Task) (entities.Task, error) {
 
 	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
 	if err != nil {
 		panic("func create failed to connect database")
 	}
 
-	t := entities.NewTask()
-
-	tx := db.Create(&t)
-	return *t, tx.Error
+	tx := db.Create(&task)
+	return task, tx.Error
 }
 
 func GetTask(ID uint16) entities.Task {
