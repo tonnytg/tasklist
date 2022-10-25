@@ -28,7 +28,7 @@ func Start() {
 	http.HandleFunc("/api/task", GetHandler)
 	http.HandleFunc("/api/tasks/add", CreateHandler)
 	http.HandleFunc("/api/tasks/update", UpdateHandler)
-	http.HandleFunc("/api/tasks/delete/{id}", DeleteHandler)
+	http.HandleFunc("/api/tasks/delete", DeleteHandler)
 	http.HandleFunc("/api/tasks/delete/all", DeleteAllHandler)
 
 	port := os.Getenv("PORT")
@@ -118,10 +118,13 @@ func CreateHandler(w http.ResponseWriter, r *http.Request) {
 
 		var t entities.Task
 		json.Unmarshal(reader, &t)
-		task := entities.Task{Name: t.Name, Description: t.Description, Status: t.Status}
+		task := entities.NewTask()
+		task.SetName(t.Name)
+		task.SetDescription(t.Description)
+		task.SetStatus(t.Status)
 
 		// Save at database
-		t, err = database.CreateTask(task.Name, task.Description, task.Status)
+		t, err = database.CreateTask(*task)
 		if err != nil {
 			w.Header().Set("Content-Type", "application/json")
 			resp := make(map[string]string)
@@ -159,17 +162,25 @@ func UpdateHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "POST" {
-		tasks := database.ListTask()
-		for i, v := range tasks {
-			fmt.Fprintf(w, "Tasks %d: %s \t description: %s \n", i, v.Name, v.Description)
+	if r.Method == "DELETE" {
+
+		reader, err := io.ReadAll(r.Body)
+		if err != nil {
+			fmt.Println(err)
 		}
+
+		var t entities.Task
+		json.Unmarshal(reader, &t)
+
+		database.DeleteTask(t)
+
+		fmt.Fprintf(w, "Done")
 	}
 	return
 }
 
 func DeleteAllHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {
+	if r.Method == "DELETE" {
 		database.DeleteAllTasks()
 
 		fmt.Fprintf(w, "Done")

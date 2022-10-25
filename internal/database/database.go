@@ -76,6 +76,15 @@ func DeleteAllTasks() {
 	db.Where("status = ?", entities.BACKLOG).Delete(&entities.Task{})
 }
 
+func DeleteTask(task entities.Task) {
+	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+	if err != nil {
+		panic("func create failed to connect database")
+	}
+
+	db.Where("hash = ?", task.Hash).Delete(&entities.Task{})
+}
+
 type TaskDb struct {
 	db *sql.DB
 }
