@@ -1,16 +1,18 @@
 # tasklist
-The tasklist is software made in Go.
-
+Tasklist it is a simple task manager api.</br>
+You can build your Frontend with any technology you want.</br>
 
 ### API
 
-- To Create
+With this API you can build your own task manager.</br>
 
-    Method: `Post`
+- GET
+- POST
+- DELETE
 
-Body:
+Test our client.http file to validade this API.</br>
 
-    {
-      "Name": "Test1",
-      "Description": "Tentando gravar algo"
-    }
+### How to run
+
+- Clone this repository
+- Run `go run bin/server/main.go`
