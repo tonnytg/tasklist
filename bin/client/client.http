@@ -1,9 +1,13 @@
-### GET request with a header
+### GET All Tasks request with a header
 GET http://localhost:9000/api/tasks
 Accept: application/json
 
+### GET Task by ID request with a query parameter
+GET http://localhost:9000/api/task?id=1
+Accept: application/json
+
 ### POST request with a header
-POST http://localhost:9000/api/tasks/add
+POST http://localhost:9000/api/task/add
 Content-Type: application/json
 
 {
