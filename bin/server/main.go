@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"github.com/tonnytg/tasklist/pkg/api"
-	"os"
 )
 
 const ServerHelp string = `
@@ -14,13 +13,7 @@ HELP Server!
 func main() {
 	fmt.Println("Server Side")
 
-	if len(os.Args) < 2 {
-		fmt.Println(ServerHelp)
-		fmt.Println("Example: ./script --option api")
-		os.Exit(0)
-	}
-
-	option := flag.String("option", "", "--option <VALUE>")
+	option := flag.String("option", "api", "--option <VALUE>")
 	help := flag.Bool("help", false, "--help")
 
 	flag.Parse()
