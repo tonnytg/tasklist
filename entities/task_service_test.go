@@ -16,7 +16,9 @@ func TestTaskService_Get(t *testing.T) {
 	persistence.EXPECT().Get(gomock.Any()).Return(task, nil).AnyTimes()
 
 	service := entities.TaskService{Persistence: persistence}
-	result, err := service.Get(1)
+	// create hash uuid
+	uuidHash := "b6e0c7d0-8c9a-4b9f-9c0e-5e4166513311"
+	result, err := service.Get(uuidHash)
 	if err != nil {
 		t.Errorf("Error: %v", err)
 	}
@@ -34,7 +36,7 @@ func TestTaskCreate(t *testing.T) {
 	persistence.EXPECT().Save(gomock.Any()).Return(task, nil).AnyTimes()
 
 	service := entities.TaskService{Persistence: persistence}
-	result, err := service.Create("test", "test")
+	result, err := service.Create("test", "test", "backlog")
 	if err != nil {
 		t.Errorf("Error: %v", err)
 	}
