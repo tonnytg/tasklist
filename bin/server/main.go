@@ -7,8 +7,7 @@ import (
 )
 
 const ServerHelp string = `
-HELP Server!
-`
+HELP Server!`
 
 func main() {
 	fmt.Println("Server Side")

@@ -7,8 +7,7 @@ import (
 )
 
 const ClientHelp string = `
-Help Client!
-`
+Help Client!`
 
 func main() {
 	fmt.Println("Client Side")
@@ -29,13 +28,4 @@ func main() {
 	if *help != false {
 		fmt.Println(ClientHelp)
 	}
-	//
-	//if *add != "" {
-	//	binary.Create(*add, *description)
-	//}
-	//
-	//if *list != false {
-	//	binary.List()
-	//}
-
 }
