@@ -5,12 +5,18 @@ import (
 	"errors"
 	"fmt"
 	"github.com/tonnytg/tasklist/entities"
+	"github.com/tonnytg/tasklist/internal/config"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
 func init() {
-	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+
+	p := config.Reader()
+
+	fullPath := p.Database.Path + "/" + p.Database.Name
+
+	db, err := gorm.Open(sqlite.Open(fullPath), &gorm.Config{})
 	if err != nil {
 		panic("func init failed to connect database")
 	}
