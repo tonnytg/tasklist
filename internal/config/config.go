@@ -5,10 +5,17 @@ import (
 	"os"
 )
 
-// Create config json reader
+// Create config yaml reader
 type Config struct {
-	Name string
-	Path string
+	Name        string `json:"name"`
+	Version     string `json:"version"`
+	Description string `json:"description"`
+	Database    struct {
+		Type  string `json:"type"`
+		Table string `json:"table"`
+		Name  string `json:"name"`
+		Path  string `json:"path"`
+	} `json:"database"`
 }
 
 func Reader() *Config {
@@ -28,5 +35,4 @@ func Reader() *Config {
 	}
 	// Return config
 	return &c
-
 }
