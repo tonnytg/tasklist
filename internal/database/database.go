@@ -10,11 +10,12 @@ import (
 	"gorm.io/gorm"
 )
 
+var (
+	p        = config.Reader()
+	fullPath = p.Database.Path + "/" + p.Database.Name
+)
+
 func init() {
-
-	p := config.Reader()
-
-	fullPath := p.Database.Path + "/" + p.Database.Name
 
 	db, err := gorm.Open(sqlite.Open(fullPath), &gorm.Config{})
 	if err != nil {
@@ -27,7 +28,7 @@ func init() {
 
 func CreateTask(task entities.Task) (*entities.Task, error) {
 
-	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open(fullPath), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +38,7 @@ func CreateTask(task entities.Task) (*entities.Task, error) {
 }
 
 func GetTask(ID uint16) (*entities.Task, error) {
-	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open(fullPath), &gorm.Config{})
 	if err != nil {
 		panic("func create failed to connect database")
 	}
@@ -51,7 +52,7 @@ func GetTask(ID uint16) (*entities.Task, error) {
 }
 
 func ListTask() ([]entities.Task, error) {
-	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open(fullPath), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +63,7 @@ func ListTask() ([]entities.Task, error) {
 }
 
 func UpdateTask(ID uint16, name string, description string) (*entities.Task, error) {
-	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open(fullPath), &gorm.Config{})
 	if err != nil {
 		panic("func create failed to connect database")
 	}
@@ -79,7 +80,7 @@ func UpdateTask(ID uint16, name string, description string) (*entities.Task, err
 }
 
 func DeleteAllTasks() error {
-	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open(fullPath), &gorm.Config{})
 	if err != nil {
 		return fmt.Errorf("failed to connect database: %s", err)
 	}
@@ -98,7 +99,7 @@ func DeleteAllTasks() error {
 }
 
 func DeleteTask(task entities.Task) {
-	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open(fullPath), &gorm.Config{})
 	if err != nil {
 		panic("func create failed to connect database")
 	}
