@@ -168,12 +168,8 @@ func UpdateTaskHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		var t *entities.Task
 		json.Unmarshal(reader, &t)
-		task := entities.NewTask()
-		task.SetName(t.Name)
-		task.SetDescription(t.Description)
-		task.SetStatus(t.Status)
 
-		database.UpdateTask(task.ID, task.Name, task.Description)
+		database.UpdateTask(t.ID, t.Name, t.Description)
 		w.WriteHeader(200)
 		w.Write([]byte("Success"))
 	}
