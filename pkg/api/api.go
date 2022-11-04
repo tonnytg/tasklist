@@ -161,9 +161,21 @@ func CreateTaskHandler(w http.ResponseWriter, r *http.Request) {
 
 func UpdateTaskHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
-		database.UpdateTask(10, "codigo", "developer")
+
+		reader, err := io.ReadAll(r.Body)
+		if err != nil {
+			fmt.Println(err)
+		}
+		var t *entities.Task
+		json.Unmarshal(reader, &t)
+		task := entities.NewTask()
+		task.SetName(t.Name)
+		task.SetDescription(t.Description)
+		task.SetStatus(t.Status)
+
+		database.UpdateTask(task.ID, task.Name, task.Description)
 		w.WriteHeader(200)
-		w.Write([]byte("test"))
+		w.Write([]byte("Success"))
 	}
 	return
 }
