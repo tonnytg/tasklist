@@ -12,15 +12,15 @@ import (
 )
 
 func LoadHandlers() {
-	http.HandleFunc("/api/task", GetTaskHandler)
-	http.HandleFunc("/api/task/add", CreateTaskHandler)
-	http.HandleFunc("/api/task/update", UpdateTaskHandler)
-	http.HandleFunc("/api/task/delete", DeleteTaksHandler)
-	http.HandleFunc("/api/tasks", ListTasksHandler)
-	http.HandleFunc("/api/tasks/delete/all", DeleteAllTasksHandler)
+	http.HandleFunc("/api/task", GetTask)
+	http.HandleFunc("/api/task/add", CreateTask)
+	http.HandleFunc("/api/task/update", UpdateTask)
+	http.HandleFunc("/api/task/delete", DeleteTaks)
+	http.HandleFunc("/api/tasks", ListTasks)
+	http.HandleFunc("/api/tasks/delete/all", DeleteAllTasks)
 }
 
-func ListTasksHandler(w http.ResponseWriter, r *http.Request) {
+func ListTasks(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 		tasks, err := database.ListTask()
 		if err != nil {
@@ -55,7 +55,7 @@ func ListTasksHandler(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func GetTaskHandler(w http.ResponseWriter, r *http.Request) {
+func GetTask(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 
 		// convert url query to variable
@@ -90,7 +90,7 @@ func GetTaskHandler(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func CreateTaskHandler(w http.ResponseWriter, r *http.Request) {
+func CreateTask(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 
 		// Example time format without millisecond if you needed
@@ -137,7 +137,7 @@ func CreateTaskHandler(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func UpdateTaskHandler(w http.ResponseWriter, r *http.Request) {
+func UpdateTask(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 
 		reader, err := io.ReadAll(r.Body)
@@ -154,7 +154,7 @@ func UpdateTaskHandler(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func DeleteTaksHandler(w http.ResponseWriter, r *http.Request) {
+func DeleteTaks(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "DELETE" {
 
 		reader, err := io.ReadAll(r.Body)
@@ -172,7 +172,7 @@ func DeleteTaksHandler(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func DeleteAllTasksHandler(w http.ResponseWriter, r *http.Request) {
+func DeleteAllTasks(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "DELETE" {
 		database.DeleteAllTasks()
 
