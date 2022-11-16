@@ -24,7 +24,7 @@ func ListTasksHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 		tasks, err := database.ListTask()
 		if err != nil {
-
+			log.Println(err)
 		}
 
 		TasksStruct := []struct {
@@ -47,7 +47,7 @@ func ListTasksHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		jsonResp, err := json.Marshal(TasksStruct)
 		if err != nil {
-			log.Fatalf("Error happened in JSON marshal list tasks. Err: %s", err)
+			log.Printf("Error happened in JSON marshal list tasks. Err: %s", err)
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonResp)
@@ -68,7 +68,7 @@ func GetTaskHandler(w http.ResponseWriter, r *http.Request) {
 
 		t, err := database.GetTask(uint16(searchID))
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 		}
 
 		// fTask contains information from task to convert to json
@@ -82,7 +82,7 @@ func GetTaskHandler(w http.ResponseWriter, r *http.Request) {
 
 		jsonResp, err := json.Marshal(fTask)
 		if err != nil {
-			log.Fatalf("Error happened in JSON marshal list tasks. Err: %s", err)
+			log.Printf("Error happened in JSON marshal list tasks. Err: %s", err)
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonResp)
@@ -98,7 +98,7 @@ func CreateTaskHandler(w http.ResponseWriter, r *http.Request) {
 
 		reader, err := io.ReadAll(r.Body)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 		}
 
 		var t *entities.Task
@@ -122,7 +122,7 @@ func CreateTaskHandler(w http.ResponseWriter, r *http.Request) {
 		// receive task from database
 		jsonRespTask, err := json.Marshal(t)
 		if err != nil {
-			log.Fatalf("Error happened in JSON marshal. Err: %s", err)
+			log.Printf("Error happened in JSON marshal. Err: %s", err)
 		}
 
 		resp := make(map[string]string)
@@ -142,7 +142,7 @@ func UpdateTaskHandler(w http.ResponseWriter, r *http.Request) {
 
 		reader, err := io.ReadAll(r.Body)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 		}
 		var t *entities.Task
 		json.Unmarshal(reader, &t)
@@ -159,7 +159,7 @@ func DeleteTaksHandler(w http.ResponseWriter, r *http.Request) {
 
 		reader, err := io.ReadAll(r.Body)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 		}
 
 		var t entities.Task
