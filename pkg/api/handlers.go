@@ -13,10 +13,10 @@ import (
 
 func LoadHandlers() {
 	http.HandleFunc("/api/task", GetTask)
+	http.HandleFunc("/api/tasks", ListTasks)
 	http.HandleFunc("/api/task/add", CreateTask)
 	http.HandleFunc("/api/task/update", UpdateTask)
 	http.HandleFunc("/api/task/delete", DeleteTaks)
-	http.HandleFunc("/api/tasks", ListTasks)
 	http.HandleFunc("/api/tasks/delete/all", DeleteAllTasks)
 }
 
