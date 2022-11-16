@@ -2,6 +2,15 @@
 Tasklist it is a simple task manager api.</br>
 You can build your Frontend with any technology you want.</br>
 
+### API Calls
+
+    /api/task
+    /api/task/add
+    /api/task/update
+    /api/task/delete
+    /api/tasks
+    /api/tasks/delete/all
+
 ### API
 
 With this API you can build your own task manager.</br>

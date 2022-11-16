@@ -12,16 +12,6 @@ import (
 )
 
 func LoadHandlers() {
-	fmt.Printf(`
-
-/api/task
-/api/task/add
-/api/task/update
-/api/task/delete
-/api/tasks
-/api/tasks/delete/all
-`)
-
 	http.HandleFunc("/api/task", GetTaskHandler)
 	http.HandleFunc("/api/task/add", CreateTaskHandler)
 	http.HandleFunc("/api/task/update", UpdateTaskHandler)
