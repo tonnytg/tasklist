@@ -15,7 +15,8 @@ func LoadHandlers() {
 	http.HandleFunc("/api/task", GetTask)
 	http.HandleFunc("/api/tasks", ListTasks)
 	http.HandleFunc("/api/task/add", CreateTask)
-	http.HandleFunc("/api/task/update", UpdateTask)
+	http.HandleFunc("/api/task/update", UpdateTaskByID)
+	http.HandleFunc("/api/task/update_hash", UpdateTaskByHash)
 	http.HandleFunc("/api/task/delete", DeleteTaks)
 	http.HandleFunc("/api/tasks/delete/all", DeleteAllTasks)
 }
@@ -66,7 +67,7 @@ func GetTask(w http.ResponseWriter, r *http.Request) {
 		// convert uint64 to uint16
 		searchID := uint16(tmpSearchID)
 
-		t, err := database.GetTask(uint16(searchID))
+		t, err := database.GetTaskByID(uint16(searchID))
 		if err != nil {
 			log.Println(err)
 		}
@@ -137,7 +138,7 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func UpdateTask(w http.ResponseWriter, r *http.Request) {
+func UpdateTaskByID(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 
 		reader, err := io.ReadAll(r.Body)
@@ -147,7 +148,24 @@ func UpdateTask(w http.ResponseWriter, r *http.Request) {
 		var t *entities.Task
 		json.Unmarshal(reader, &t)
 
-		database.UpdateTask(t.ID, t.Name, t.Description)
+		database.UpdateTaskByID(t.ID, t.Name, t.Description)
+		w.WriteHeader(200)
+		w.Write([]byte("Success"))
+	}
+	return
+}
+
+func UpdateTaskByHash(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+
+		reader, err := io.ReadAll(r.Body)
+		if err != nil {
+			log.Println(err)
+		}
+		var t *entities.Task
+		json.Unmarshal(reader, &t)
+
+		database.UpdateTaskByHash(t.Hash, t.Name, t.Description)
 		w.WriteHeader(200)
 		w.Write([]byte("Success"))
 	}

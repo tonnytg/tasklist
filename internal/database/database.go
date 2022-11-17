@@ -36,7 +36,7 @@ func CreateTask(task entities.Task) (*entities.Task, error) {
 	return &task, tx.Error
 }
 
-func GetTask(ID uint16) (*entities.Task, error) {
+func GetTaskByID(ID uint16) (*entities.Task, error) {
 	db, err := gorm.Open(sqlite.Open(fullPath), &gorm.Config{})
 	if err != nil {
 		panic("func create failed to connect database")
@@ -45,7 +45,22 @@ func GetTask(ID uint16) (*entities.Task, error) {
 	tempTask := entities.Task{}
 	db.First(&tempTask, ID)
 	if tempTask.ID == 0 {
-		return nil, errors.New("task not found")
+		return nil, errors.New("task by id not found")
+	}
+	return &tempTask, nil
+}
+
+func GetTaskByHash(Hash string) (*entities.Task, error) {
+	db, err := gorm.Open(sqlite.Open(fullPath), &gorm.Config{})
+	if err != nil {
+		panic("func create failed to connect database")
+	}
+
+	tempTask := entities.Task{}
+	// db get by hash
+	db.Where("hash = ?", Hash).First(&tempTask)
+	if tempTask.ID == 0 {
+		return nil, errors.New("task by hash not found")
 	}
 	return &tempTask, nil
 }
@@ -61,13 +76,30 @@ func ListTask() ([]entities.Task, error) {
 	return tempTask, nil
 }
 
-func UpdateTask(ID uint16, name string, description string) (*entities.Task, error) {
+func UpdateTaskByID(ID uint16, name string, description string) (*entities.Task, error) {
 	db, err := gorm.Open(sqlite.Open(fullPath), &gorm.Config{})
 	if err != nil {
 		panic("func create failed to connect database")
 	}
 
-	task, err := GetTask(ID)
+	task, err := GetTaskByID(ID)
+	if err != nil {
+		return nil, err
+	}
+	task.Name = name
+	task.Description = description
+	db.Save(&task)
+
+	return task, nil
+}
+
+func UpdateTaskByHash(hash string, name string, description string) (*entities.Task, error) {
+	db, err := gorm.Open(sqlite.Open(fullPath), &gorm.Config{})
+	if err != nil {
+		panic("func create failed to connect database")
+	}
+
+	task, err := GetTaskByHash(hash)
 	if err != nil {
 		return nil, err
 	}
