@@ -21,6 +21,11 @@ func LoadHandlers() {
 	http.HandleFunc("/api/tasks/delete/all", DeleteAllTasks)
 }
 
+type TaskStruct struct {
+	Full string        `json:"full"`
+	Task entities.Task `json:"task"`
+}
+
 func ListTasks(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 		tasks, err := database.ListTask()
@@ -28,25 +33,19 @@ func ListTasks(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 		}
 
-		TasksStruct := []struct {
-			Full string        `json:"full"`
-			Task entities.Task `json:"task"`
-		}{}
+		var tasksStruct []TaskStruct
 
 		for _, v := range tasks {
 
 			// fTask contains information from task to convert to json
-			fTask := struct {
-				Full string        `json:"full"`
-				Task entities.Task `json:"task"`
-			}{}
-			fTask.Full = fmt.Sprintf("TaskID %d - %s - Status: %s",
+			var t TaskStruct
+			t.Full = fmt.Sprintf("TaskID %d - %s - Status: %s",
 				v.ID, v.Name, v.Status)
-			fTask.Task = v
+			t.Task = v
 
-			TasksStruct = append(TasksStruct, fTask)
+			tasksStruct = append(tasksStruct, t)
 		}
-		jsonResp, err := json.Marshal(TasksStruct)
+		jsonResp, err := json.Marshal(tasksStruct)
 		if err != nil {
 			log.Printf("Error happened in JSON marshal list tasks. Err: %s", err)
 		}
@@ -73,15 +72,12 @@ func GetTask(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// fTask contains information from task to convert to json
-		fTask := struct {
-			Full string        `json:"full"`
-			Task entities.Task `json:"task"`
-		}{}
-		fTask.Full = fmt.Sprintf("TaskID %d - %s - Status: %s",
+		var tks TaskStruct
+		tks.Full = fmt.Sprintf("TaskID %d - %s - Status: %s",
 			t.ID, t.Name, t.Status)
-		fTask.Task = *t
+		tks.Task = *t
 
-		jsonResp, err := json.Marshal(fTask)
+		jsonResp, err := json.Marshal(tks)
 		if err != nil {
 			log.Printf("Error happened in JSON marshal list tasks. Err: %s", err)
 		}
