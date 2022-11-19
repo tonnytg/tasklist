@@ -14,15 +14,84 @@ var (
 	fullPath = p.Database.Path + "/" + p.Database.Name
 )
 
+type TaskDb struct {
+	db *gorm.DB
+}
+
 func init() {
 
-	db, err := gorm.Open(sqlite.Open(fullPath), &gorm.Config{})
+	Con, err := NewTaskDb()
 	if err != nil {
-		panic("func init failed to connect database")
+		panic("failed to connect database in init func" + err.Error())
 	}
 
 	// Migrate the schema
-	db.AutoMigrate(&entities.Task{})
+	Con.db.AutoMigrate(&entities.Task{})
+}
+
+func NewTaskDb() (*TaskDb, error) {
+
+	var db *gorm.DB
+	db, err := gorm.Open(sqlite.Open(fullPath), &gorm.Config{})
+	if err != nil {
+		return nil, err
+	}
+	return &TaskDb{db: db}, err
+}
+
+func (td *TaskDb) Get(hash string) (entities.TaskInterface, error) {
+
+	tempTask := entities.Task{}
+	td.db.Where("hash = ?", hash).First(&tempTask)
+	if tempTask.ID == 0 {
+		return nil, errors.New("task by hash not found")
+	}
+	return &tempTask, nil
+}
+
+func (td *TaskDb) create(task *entities.Task) (entities.TaskInterface, error) {
+
+	result := td.db.Create(&task)
+	if result.Error != nil {
+		errorMsg := fmt.Sprintf("failed to create task: %s", result.Error.Error())
+		return nil, errors.New(errorMsg)
+	}
+
+	return task, nil
+}
+
+func (td TaskDb) update(task *entities.Task) (entities.TaskInterface, error) {
+
+	result := td.db.Where("hash = ?", task.Hash).First(&task)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	result = td.db.Save(&task)
+	if result.Error != nil {
+		errorMsg := fmt.Sprintf("failed to update task: %s", result.Error.Error())
+		return nil, errors.New(errorMsg)
+	}
+
+	return task, nil
+}
+
+func (td *TaskDb) Save(task *entities.Task) (entities.TaskInterface, error) {
+
+	result := td.db.Where("hash = ?", task.GetHash()).First(&task)
+	if result.Error != nil {
+		_, err := td.create(task)
+		if err != nil {
+			return nil, err
+		}
+		return task, nil
+	}
+
+	_, err := td.update(task)
+	if err != nil {
+		return nil, err
+	}
+	return task, nil
 }
 
 func CreateTask(task entities.Task) (*entities.Task, error) {
@@ -36,6 +105,7 @@ func CreateTask(task entities.Task) (*entities.Task, error) {
 	return &task, tx.Error
 }
 
+// TODO: Remover conexões sem o serviceInterface
 func GetTaskByID(ID uint16) (*entities.Task, error) {
 	db, err := gorm.Open(sqlite.Open(fullPath), &gorm.Config{})
 	if err != nil {
