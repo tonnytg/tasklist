@@ -15,7 +15,9 @@ func TestTaskService_Get(t *testing.T) {
 	persistence := mock_entities.NewMockTaskPersistenceInterface(ctrl)
 	persistence.EXPECT().Get(gomock.Any()).Return(task, nil).AnyTimes()
 
-	service := entities.TaskService{Persistence: persistence}
+	service := entities.TaskService{
+		Persistence: persistence,
+	}
 	// create hash uuid
 	uuidHash := "b6e0c7d0-8c9a-4b9f-9c0e-5e4166513311"
 	result, err := service.Get(uuidHash)

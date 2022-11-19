@@ -15,25 +15,34 @@ const (
 	CANCELED = "canceled"
 )
 
+type Body struct {
+	Content string `json:"content"`
+}
+
+type Task struct {
+	ID          uint16    `json:"id"`
+	Hash        string    `json:"hash"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	Body        Body      `json:"body"`
+	Status      string    `json:"status"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+}
+
 type TaskInterface interface {
 	GetID() uint16
-	GetIDString() string
+	GetIdByString() string
+	GetHash() string
 	GetName() string
 	GetDescription() string
+	GetBody() Body
 	GetStatus() string
-	GetHash() string
-	SetID(ID uint16) error
 	SetHash(hash string) error
 	SetName(name string) error
 	SetDescription(description string) error
+	SetBody(body Body) error
 	SetStatus(status string) error
-}
-
-// TaskServiceInterface orquest the task actions orders
-type TaskServiceInterface interface {
-	Create(name string, description string, status string) (TaskInterface, error)
-	Get(hash string) (TaskInterface, error)
-	Update(hash string, name string, description string, status string) (TaskInterface, error)
 }
 
 type TaskReader interface {
@@ -49,28 +58,34 @@ type TaskPersistenceInterface interface {
 	TaskWriter
 }
 
-type Task struct {
-	ID          uint16    `json:"id"`
-	Hash        string    `json:"hash"`
-	Name        string    `json:"name"`
-	Description string    `json:"description"`
-	Status      string    `json:"status"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
-}
+func NewTask(name string, description string, body Body, status string) (*Task, error) {
+	var task Task
+	err := task.SetName(name)
+	if err != nil {
+		return nil, err
+	}
+	err = task.SetDescription(description)
+	if err != nil {
+		return nil, err
+	}
+	err = task.SetBody(body)
+	if err != nil {
+		return nil, err
+	}
+	err = task.SetStatus(status)
+	if err != nil {
+		return nil, err
+	}
 
-func NewTask() *Task {
-	t := Task{}
-	t.Hash = uuid.NewString()
-	t.Status = BACKLOG
-	return &t
+	task.SetHash(uuid.New().String())
+	return &task, nil
 }
 
 func (t *Task) GetID() uint16 {
 	return t.ID
 }
 
-func (t *Task) GetIDString() string {
+func (t *Task) GetIdByString() string {
 	i := strconv.Itoa(int(t.ID))
 	return i
 }
@@ -87,13 +102,12 @@ func (t *Task) GetDescription() string {
 	return t.Description
 }
 
-func (t *Task) GetStatus() string {
-	return t.Status
+func (t *Task) GetBody() Body {
+	return t.Body
 }
 
-func (t *Task) SetID(ID uint16) error {
-	t.ID = ID
-	return nil
+func (t *Task) GetStatus() string {
+	return t.Status
 }
 
 func (t *Task) SetHash(hash string) error {
@@ -124,6 +138,11 @@ func (t *Task) SetDescription(description string) error {
 		return nil
 	}
 	return errors.New("description has invalid characters or less than 50 characters")
+}
+
+func (t *Task) SetBody(body Body) error {
+	t.Body = body
+	return nil
 }
 
 func (t *Task) SetStatus(status string) error {
