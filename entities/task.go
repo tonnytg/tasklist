@@ -3,6 +3,7 @@ package entities
 import (
 	"errors"
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 	"regexp"
 	"strconv"
 	"time"
@@ -15,19 +16,22 @@ const (
 	CANCELED = "canceled"
 )
 
-type Body struct {
-	Content string `json:"content"`
-}
-
 type Task struct {
 	ID          uint16    `json:"id"`
 	Hash        string    `json:"hash"`
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
-	Body        Body      `json:"body"`
+	BodyID      uint16    `json:"body_id"`
+	Body        Body      `json:"body" gorm:"foreignKey:BodyID" gorm:"references:TaskHash"`
 	Status      string    `json:"status"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
+}
+
+type Body struct {
+	gorm.Model
+	TaskHash string `json:"task_hash"`
+	Content  string `json:"content"`
 }
 
 type TaskInterface interface {
@@ -50,7 +54,7 @@ type TaskReader interface {
 }
 
 type TaskWriter interface {
-	Save(task TaskInterface) (TaskInterface, error)
+	Save(task *Task) (TaskInterface, error)
 }
 
 type TaskPersistenceInterface interface {
@@ -68,6 +72,7 @@ func NewTask(name string, description string, body Body, status string) (*Task, 
 	if err != nil {
 		return nil, err
 	}
+	body.TaskHash = task.Hash
 	err = task.SetBody(body)
 	if err != nil {
 		return nil, err
@@ -158,6 +163,7 @@ func (t *Task) SetStatus(status string) error {
 		return nil
 	default:
 		t.Status = BACKLOG
+		return nil
 	}
 	return errors.New("status is invalid")
 }

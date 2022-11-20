@@ -12,7 +12,7 @@ import (
 )
 
 func LoadHandlers() {
-	http.HandleFunc("/api/task", GetTask)
+	http.HandleFunc("/api/task", Get)
 	http.HandleFunc("/api/tasks", ListTasks)
 	http.HandleFunc("/api/task/add", CreateTask)
 	http.HandleFunc("/api/task/update", UpdateTaskByID)
@@ -53,6 +53,26 @@ func ListTasks(w http.ResponseWriter, r *http.Request) {
 		w.Write(jsonResp)
 	}
 	return
+}
+
+func Get(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "GET" {
+		hash := r.URL.Query().Get("hash")
+
+		Con, err := database.NewTaskDb()
+		if err != nil {
+			log.Println("cannot connect database:", err)
+		}
+
+		TaskService := entities.NewTaskService(Con)
+		t, _ := TaskService.Get(hash)
+		fmt.Println("t:", t)
+		jsonResp, err := json.Marshal(t)
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonResp)
+		fmt.Println(string(jsonResp))
+
+	}
 }
 
 func GetTask(w http.ResponseWriter, r *http.Request) {
@@ -100,10 +120,10 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 
 		var t *entities.Task
 		json.Unmarshal(reader, &t)
-		task := entities.NewTask()
-		task.SetName(t.Name)
-		task.SetDescription(t.Description)
-		task.SetStatus(t.Status)
+		task, err := entities.NewTask(t.Name, t.Description, t.Body, t.Status)
+		if err != nil {
+			log.Println(err)
+		}
 
 		// Save at database
 		t, err = database.CreateTask(*task)
