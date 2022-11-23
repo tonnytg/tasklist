@@ -15,7 +15,7 @@ func TestTaskDb_Get(t *testing.T) {
 	}
 
 	// Create Task
-	task, err := entities.NewTask("testName", "testDesc", "testBody", "backlog")
+	task, err := entities.NewTask("testName", "testDesc", entities.Body{Content: "body test"}, "backlog")
 	if err != nil {
 		t.Errorf("failed to create task: %s", err)
 	}
