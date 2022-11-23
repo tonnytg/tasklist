@@ -264,7 +264,7 @@ func (m *MockTaskWriter) EXPECT() *MockTaskWriterMockRecorder {
 }
 
 // Save mocks base method.
-func (m *MockTaskWriter) Save(task entities.TaskInterface) (entities.TaskInterface, error) {
+func (m *MockTaskWriter) Save(task *entities.Task) (entities.TaskInterface, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Save", task)
 	ret0, _ := ret[0].(entities.TaskInterface)
@@ -317,7 +317,7 @@ func (mr *MockTaskPersistenceInterfaceMockRecorder) Get(hash interface{}) *gomoc
 }
 
 // Save mocks base method.
-func (m *MockTaskPersistenceInterface) Save(task entities.TaskInterface) (entities.TaskInterface, error) {
+func (m *MockTaskPersistenceInterface) Save(task *entities.Task) (entities.TaskInterface, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Save", task)
 	ret0, _ := ret[0].(entities.TaskInterface)
