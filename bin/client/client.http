@@ -2,6 +2,10 @@
 GET http://localhost:9000/api/tasks
 Accept: application/json
 
+### GET All Tasks request with a header
+GET http://localhost:9000/api/task?hash=da7444b2-3859-4c78-ba33-c50f57018243
+Accept: application/json
+
 ### GET Task by ID request with a query parameter
 GET http://localhost:9000/api/task?id=1
 Accept: application/json
@@ -11,8 +15,11 @@ POST http://localhost:9000/api/task/add
 Content-Type: application/json
 
 {
-  "name": "My task",
-  "description": "This is a task"
+  "name": "My task1234",
+  "description": "This is a task1234",
+  "body": {
+    "content": "hi"
+  }
 }
 
 ### DELETE request with a header
