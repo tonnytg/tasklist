@@ -38,7 +38,7 @@ func TestTaskCreate(t *testing.T) {
 	persistence.EXPECT().Save(gomock.Any()).Return(task, nil).AnyTimes()
 
 	service := entities.TaskService{Persistence: persistence}
-	result, err := service.Create("test", "test", "backlog")
+	result, err := service.Create("test", "test", entities.Body{Content: "testBody"}, "backlog")
 	if err != nil {
 		t.Errorf("Error: %v", err)
 	}

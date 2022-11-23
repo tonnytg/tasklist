@@ -6,9 +6,9 @@ type TaskService struct {
 
 // TaskServiceInterface orquest the task actions orders
 type TaskServiceInterface interface {
-	Create(name string, description string, body string, status string) (TaskInterface, error)
+	Create(name string, description string, body Body, status string) (TaskInterface, error)
 	Get(hash string) (TaskInterface, error)
-	Update(hash string, name string, description string, body string, status string) (TaskInterface, error)
+	Update(hash string, name string, description string, body Body, status string) (TaskInterface, error)
 }
 
 func NewTaskService(persistence TaskPersistenceInterface) *TaskService {

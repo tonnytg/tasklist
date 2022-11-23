@@ -35,7 +35,7 @@ func (m *MockTaskServiceInterface) EXPECT() *MockTaskServiceInterfaceMockRecorde
 }
 
 // Create mocks base method.
-func (m *MockTaskServiceInterface) Create(name, description, body, status string) (entities.TaskInterface, error) {
+func (m *MockTaskServiceInterface) Create(name, description string, body entities.Body, status string) (entities.TaskInterface, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", name, description, body, status)
 	ret0, _ := ret[0].(entities.TaskInterface)
@@ -65,7 +65,7 @@ func (mr *MockTaskServiceInterfaceMockRecorder) Get(hash interface{}) *gomock.Ca
 }
 
 // Update mocks base method.
-func (m *MockTaskServiceInterface) Update(hash, name, description, body, status string) (entities.TaskInterface, error) {
+func (m *MockTaskServiceInterface) Update(hash, name, description string, body entities.Body, status string) (entities.TaskInterface, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", hash, name, description, body, status)
 	ret0, _ := ret[0].(entities.TaskInterface)
