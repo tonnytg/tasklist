@@ -12,12 +12,8 @@ import (
 
 func LoadHandlers() {
 	http.HandleFunc("/api/task", Get)
-	http.HandleFunc("/api/tasks", ListTasks)
 	http.HandleFunc("/api/task/add", Create)
-	http.HandleFunc("/api/task/update", UpdateTaskByID)
-	http.HandleFunc("/api/task/update_hash", UpdateTaskByHash)
-	http.HandleFunc("/api/task/delete", DeleteTaks)
-	http.HandleFunc("/api/tasks/delete/all", DeleteAllTasks)
+	http.HandleFunc("/api/task/update", Update)
 }
 
 type TaskStruct struct {
@@ -25,55 +21,69 @@ type TaskStruct struct {
 	Task entities.Task `json:"task"`
 }
 
-func ListTasks(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {
-		tasks, err := database.ListTask()
-		if err != nil {
-			log.Println(err)
-		}
-
-		var tasksStruct []TaskStruct
-
-		for _, v := range tasks {
-
-			// fTask contains information from task to convert to json
-			var t TaskStruct
-			t.Full = fmt.Sprintf("TaskID %d - %s - Status: %s",
-				v.ID, v.Name, v.Status)
-			t.Task = v
-
-			tasksStruct = append(tasksStruct, t)
-		}
-		jsonResp, err := json.Marshal(tasksStruct)
-		if err != nil {
-			log.Printf("Error happened in JSON marshal list tasks. Err: %s", err)
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(jsonResp)
-	}
-	return
+type Answer struct {
+	Task   []entities.Task `json:"task"`
+	Answer string          `json:"answer"`
+	Status int             `json:"statusCode"`
 }
 
 func Get(w http.ResponseWriter, r *http.Request) {
+
+	var a Answer
+	w.Header().Set("Content-Type", "application/json")
+
 	if r.Method == "GET" {
 		hash := r.URL.Query().Get("hash")
+		if hash == "" {
+			a.Answer = "Hash is required"
+			a.Status = http.StatusBadRequest
+			jsonResp, _ := json.Marshal(a)
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write(jsonResp)
+			return
+		}
 
 		Con, err := database.NewTaskDb()
 		if err != nil {
-			log.Println("cannot connect database:", err)
+			errorMsg := fmt.Sprintf("cannot connect database:", err)
+			a.Answer = errorMsg
+			a.Status = http.StatusInternalServerError
+			fmt.Fprintf(w, "status error:%d", a.Status)
+			return
 		}
 
 		TaskService := entities.NewTaskService(Con)
-		t, _ := TaskService.Get(hash)
-		fmt.Println("t:", t)
+		t, err := TaskService.Get(hash)
+		if err != nil {
+			log.Println("cannot get task:", err)
+			a.Answer = err.Error()
+			a.Status = http.StatusBadRequest
+			fmt.Fprintf(w, "status: %d", a.Status)
+			return
+		}
+
 		jsonResp, err := json.Marshal(t)
-		w.Header().Set("Content-Type", "application/json")
+		if err != nil {
+			log.Printf("error happened in json marshal list tasks; error: %s", err)
+			a.Answer = err.Error()
+			a.Status = http.StatusInternalServerError
+			fmt.Fprintf(w, "status: %d", a.Status)
+		}
+		w.WriteHeader(http.StatusOK)
 		w.Write(jsonResp)
-		fmt.Println(string(jsonResp))
+		return
 	}
+	a.Status = http.StatusBadRequest
+	a.Answer = "Bad request"
+	fmt.Fprintf(w, "status: %d", a.Status)
+	return
 }
 
 func Create(w http.ResponseWriter, r *http.Request) {
+
+	var a Answer
+	w.Header().Set("Content-Type", "application/json")
+
 	if r.Method == "POST" {
 
 		reader, err := io.ReadAll(r.Body)
@@ -90,72 +100,69 @@ func Create(w http.ResponseWriter, r *http.Request) {
 		}
 
 		TaskService := entities.NewTaskService(Con)
-		t, _ := TaskService.Create(task.Name, task.Description, task.Body, task.Status)
+		t, err := TaskService.Create(task.Name, task.Description, task.Body, task.Status)
+		if err != nil {
+			log.Println("cannot create task:", err)
+			a.Answer = err.Error()
+			a.Status = http.StatusBadRequest
+			jsonResp, _ := json.Marshal(a)
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write(jsonResp)
+			return
+		}
 		jsonResp, err := json.Marshal(t)
-		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 		w.Write(jsonResp)
 		fmt.Println(string(jsonResp))
+		return
 	}
-}
-
-func UpdateTaskByID(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "POST" {
-
-		reader, err := io.ReadAll(r.Body)
-		if err != nil {
-			log.Println(err)
-		}
-		var t *entities.Task
-		json.Unmarshal(reader, &t)
-
-		database.UpdateTaskByID(t.ID, t.Name, t.Description)
-		w.WriteHeader(200)
-		w.Write([]byte("Success"))
-	}
+	a.Status = http.StatusBadRequest
+	a.Answer = "Bad request"
+	fmt.Fprintf(w, "status: %d", a.Status)
 	return
 }
 
-func UpdateTaskByHash(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "POST" {
+// TODO: update task by ID generate a new hash in persistence
+// this will create a new taks not update, needs refactor
 
-		reader, err := io.ReadAll(r.Body)
-		if err != nil {
-			log.Println(err)
-		}
-		var t *entities.Task
-		json.Unmarshal(reader, &t)
+func Update(w http.ResponseWriter, r *http.Request) {
 
-		database.UpdateTaskByHash(t.Hash, t.Name, t.Description)
-		w.WriteHeader(200)
-		w.Write([]byte("Success"))
-	}
-	return
-}
+	var a Answer
+	w.Header().Set("Content-Type", "application/json")
 
-func DeleteTaks(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "DELETE" {
-
+	if r.Method == "PUT" {
 		reader, err := io.ReadAll(r.Body)
 		if err != nil {
 			log.Println(err)
 		}
 
-		var t entities.Task
-		json.Unmarshal(reader, &t)
+		task := entities.Task{}
+		json.Unmarshal(reader, &task)
 
-		database.DeleteTask(t)
+		Con, err := database.NewTaskDb()
+		if err != nil {
+			log.Println("cannot connect database:", err)
+		}
 
-		fmt.Fprintf(w, "Done")
+		TaskService := entities.NewTaskService(Con)
+		t, err := TaskService.Update(task.ID, task.Name, task.Description, task.Body, task.Status)
+		if err != nil {
+			log.Println("cannot update task:", err)
+			a.Answer = err.Error()
+			a.Status = http.StatusBadRequest
+			jsonResp, _ := json.Marshal(a)
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write(jsonResp)
+			return
+		}
+		jsonResp, err := json.Marshal(t)
+		w.WriteHeader(http.StatusOK)
+		w.Write(jsonResp)
+		fmt.Println(string(jsonResp))
+		return
 	}
-	return
-}
-
-func DeleteAllTasks(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "DELETE" {
-		database.DeleteAllTasks()
-
-		fmt.Fprintf(w, "Done")
-	}
+	a.Status = http.StatusBadRequest
+	a.Answer = "Bad request"
+	fmt.Fprintf(w, "status: %d", a.Status)
 	return
 }
