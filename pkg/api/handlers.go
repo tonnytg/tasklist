@@ -8,13 +8,12 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"strconv"
 )
 
 func LoadHandlers() {
 	http.HandleFunc("/api/task", Get)
 	http.HandleFunc("/api/tasks", ListTasks)
-	http.HandleFunc("/api/task/add", CreateTask)
+	http.HandleFunc("/api/task/add", Create)
 	http.HandleFunc("/api/task/update", UpdateTaskByID)
 	http.HandleFunc("/api/task/update_hash", UpdateTaskByHash)
 	http.HandleFunc("/api/task/delete", DeleteTaks)
@@ -71,87 +70,33 @@ func Get(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonResp)
 		fmt.Println(string(jsonResp))
-
 	}
 }
 
-func GetTask(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {
-
-		// convert url query to variable
-		id := r.URL.Query().Get("id")
-
-		// convert string to uint64
-		tmpSearchID, err := strconv.ParseUint(id, 16, 16)
-		// convert uint64 to uint16
-		searchID := uint16(tmpSearchID)
-
-		t, err := database.GetTaskByID(uint16(searchID))
-		if err != nil {
-			log.Println(err)
-		}
-
-		// fTask contains information from task to convert to json
-		var tks TaskStruct
-		tks.Full = fmt.Sprintf("TaskID %d - %s - Status: %s",
-			t.ID, t.Name, t.Status)
-		tks.Task = *t
-
-		jsonResp, err := json.Marshal(tks)
-		if err != nil {
-			log.Printf("Error happened in JSON marshal list tasks. Err: %s", err)
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(jsonResp)
-	}
-	return
-}
-
-func CreateTask(w http.ResponseWriter, r *http.Request) {
+func Create(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
-
-		// Example time format without millisecond if you needed
-		// createAt := time.Now().Format("2006-01-02")
 
 		reader, err := io.ReadAll(r.Body)
 		if err != nil {
 			log.Println(err)
 		}
 
-		var t *entities.Task
-		json.Unmarshal(reader, &t)
-		task, err := entities.NewTask(t.Name, t.Description, t.Body, t.Status)
+		task := entities.Task{}
+		json.Unmarshal(reader, &task)
+
+		Con, err := database.NewTaskDb()
 		if err != nil {
-			log.Println(err)
+			log.Println("cannot connect database:", err)
 		}
 
-		// Save at database
-		t, err = database.CreateTask(*task)
-		if err != nil {
-			w.Header().Set("Content-Type", "application/json")
-			resp := make(map[string]string)
-			resp["message"] = "Status Failed"
-			jsonRespStatus, _ := json.Marshal(resp)
-			w.Write(jsonRespStatus)
-			return
-		}
-
-		// receive task from database
-		jsonRespTask, err := json.Marshal(t)
-		if err != nil {
-			log.Printf("Error happened in JSON marshal. Err: %s", err)
-		}
-
-		resp := make(map[string]string)
-		resp["message"] = "Status OK"
-		jsonRespStatus, _ := json.Marshal(resp)
-
+		TaskService := entities.NewTaskService(Con)
+		t, _ := TaskService.Create(task.Name, task.Description, task.Body, task.Status)
+		jsonResp, err := json.Marshal(t)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		w.Write(jsonRespTask)
-		w.Write(jsonRespStatus)
+		w.Write(jsonResp)
+		fmt.Println(string(jsonResp))
 	}
-	return
 }
 
 func UpdateTaskByID(w http.ResponseWriter, r *http.Request) {
