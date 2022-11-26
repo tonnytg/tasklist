@@ -145,7 +145,7 @@ func Update(w http.ResponseWriter, r *http.Request) {
 		}
 
 		TaskService := entities.NewTaskService(Con)
-		t, err := TaskService.Update(task.ID, task.Name, task.Description, task.Body, task.Status)
+		t, err := TaskService.Update(task.Hash, task.Name, task.Description, task.Body, task.Status)
 		if err != nil {
 			log.Println("cannot update task:", err)
 			a.Answer = err.Error()
