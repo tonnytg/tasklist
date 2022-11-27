@@ -127,42 +127,26 @@ func Create(w http.ResponseWriter, r *http.Request) {
 
 func Update(w http.ResponseWriter, r *http.Request) {
 
-	var a Answer
-	w.Header().Set("Content-Type", "application/json")
+	var TaskTemp entities.Task
 
-	if r.Method == "PUT" {
-		reader, err := io.ReadAll(r.Body)
-		if err != nil {
-			log.Println(err)
-		}
-
-		task := entities.Task{}
-		json.Unmarshal(reader, &task)
-
-		Con, err := database.NewTaskDb()
-		if err != nil {
-			log.Println("cannot connect database:", err)
-		}
-
-		TaskService := entities.NewTaskService(Con)
-		t, err := TaskService.Update(task.Hash, task.Name, task.Description, task.Body, task.Status)
-		if err != nil {
-			log.Println("cannot update task:", err)
-			a.Answer = err.Error()
-			a.Status = http.StatusBadRequest
-			jsonResp, _ := json.Marshal(a)
-			w.WriteHeader(http.StatusBadRequest)
-			w.Write(jsonResp)
-			return
-		}
-		jsonResp, err := json.Marshal(t)
-		w.WriteHeader(http.StatusOK)
-		w.Write(jsonResp)
-		fmt.Println(string(jsonResp))
-		return
+	reader, err := io.ReadAll(r.Body)
+	if err != nil {
+		log.Println(err)
 	}
-	a.Status = http.StatusBadRequest
-	a.Answer = "Bad request"
-	fmt.Fprintf(w, "status: %d", a.Status)
+
+	json.Unmarshal(reader, &TaskTemp)
+
+	Con, err := database.NewTaskDb()
+	if err != nil {
+		log.Println("cannot connect database:", err)
+	}
+
+	TaskService := entities.NewTaskService(Con)
+	tt, _ := TaskService.Get(TaskTemp.Hash)
+	fmt.Println(tt)
+
+	fmt.Println(TaskTemp)
+
+	w.Write([]byte("update task"))
 	return
 }
