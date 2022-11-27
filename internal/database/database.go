@@ -62,12 +62,19 @@ func (td *TaskDb) create(task *entities.Task) (entities.TaskInterface, error) {
 
 func (td *TaskDb) update(task *entities.Task) (entities.TaskInterface, error) {
 
-	result := td.db.Where("hash = ?", task.Hash).First(&task)
+	var tempTask entities.Task
+
+	result := td.db.Where("hash = ?", task.Hash).First(&tempTask)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 
-	result = td.db.Save(&task)
+	tempTask.SetName(task.GetName())
+	tempTask.SetDescription(task.GetDescription())
+	tempTask.SetBody(task.GetBody())
+	tempTask.SetStatus(task.GetStatus())
+
+	result = td.db.Save(&tempTask)
 	if result.Error != nil {
 		errorMsg := fmt.Sprintf("failed to update task: %s", result.Error.Error())
 		return nil, errors.New(errorMsg)
@@ -78,7 +85,8 @@ func (td *TaskDb) update(task *entities.Task) (entities.TaskInterface, error) {
 
 func (td *TaskDb) Save(task *entities.Task) (entities.TaskInterface, error) {
 
-	result := td.db.Where("hash = ?", task.GetHash()).First(&task)
+	var tempTask entities.Task
+	result := td.db.Where("hash = ?", task.GetHash()).First(&tempTask)
 	if result.Error != nil {
 		_, err := td.create(task)
 		if err != nil {

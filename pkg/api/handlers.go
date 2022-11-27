@@ -128,24 +128,18 @@ func Create(w http.ResponseWriter, r *http.Request) {
 func Update(w http.ResponseWriter, r *http.Request) {
 
 	var TaskTemp entities.Task
-
 	reader, err := io.ReadAll(r.Body)
 	if err != nil {
 		log.Println(err)
 	}
-
 	json.Unmarshal(reader, &TaskTemp)
 
 	Con, err := database.NewTaskDb()
 	if err != nil {
 		log.Println("cannot connect database:", err)
 	}
-
 	TaskService := entities.NewTaskService(Con)
-	tt, _ := TaskService.Get(TaskTemp.Hash)
-	fmt.Println(tt)
-
-	fmt.Println(TaskTemp)
+	TaskService.Update(TaskTemp.Hash, TaskTemp.Name, TaskTemp.Description, TaskTemp.Body, TaskTemp.Status)
 
 	w.Write([]byte("update task"))
 	return
