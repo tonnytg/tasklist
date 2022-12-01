@@ -30,6 +30,7 @@ type Answer struct {
 func Get(w http.ResponseWriter, r *http.Request) {
 
 	var a Answer
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 
 	if r.Method == "GET" {
@@ -82,6 +83,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 func Create(w http.ResponseWriter, r *http.Request) {
 
 	var a Answer
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 
 	if r.Method == "POST" {
@@ -141,6 +143,7 @@ func Update(w http.ResponseWriter, r *http.Request) {
 	TaskService := entities.NewTaskService(Con)
 	TaskService.Update(TaskTemp.Hash, TaskTemp.Name, TaskTemp.Description, TaskTemp.Body, TaskTemp.Status)
 
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Write([]byte("update task"))
 	return
 }
