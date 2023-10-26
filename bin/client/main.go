@@ -1,42 +1,59 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 )
 
-const ClientHelp string = `pass help as argument to get help.
+const (
+	ClientHelp = `pass help as argument to get help.
 ./taskclient help`
-const AddHelp string = `Help Add!`
+	AddHelp  = `Help Add!`
+	ErrUsage = "args not found"
+)
 
 func main() {
 	fmt.Println("Client Side")
 
-	if len(os.Args) < 2 {
+	if err := processArgs(os.Args[1:]); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+}
+
+func processArgs(args []string) error {
+	if len(args) == 0 {
 		fmt.Println(ClientHelp)
-		os.Exit(0)
+		return nil
 	}
 
-	os.Args = os.Args[1:]
-	if os.Args[0] == "help" {
-		fmt.Println(ClientHelp)
-		os.Exit(0)
+	switch args[0] {
+	case "help":
+		fmt.Println(AddHelp)
+		return nil
+	case "add":
+		return handleAdd(args[1:])
+	default:
+		return errors.New(ErrUsage)
+	}
+}
+
+func handleAdd(args []string) error {
+	if len(args) == 0 {
+		fmt.Println(AddHelp)
+		return errors.New("missing arguments for add")
 	}
 
-	if os.Args[0] == "add" {
-		if len(os.Args) < 2 {
-			fmt.Println(AddHelp)
-			os.Exit(1)
+	fmt.Println("Add")
+	fmt.Println("lenArgs:", len(args))
+	fmt.Println("Title:", args[0])
+
+	if len(args) > 1 && (args[1] == "desc" || args[1] == "description") {
+		if len(args) < 3 {
+			return errors.New("missing description value")
 		}
-		fmt.Println("Add")
-		args := os.Args[1:]
-		fmt.Println("lenArgs:", len(args))
-		fmt.Println("Title:", args[0])
-		if args[1] == "desc" || args[1] == "description" {
-			fmt.Println("Description:", args[2])
-		}
-		os.Exit(0)
+		fmt.Println("Description:", args[2])
 	}
-	fmt.Println("args not found")
-	os.Exit(1)
+	return nil
 }
