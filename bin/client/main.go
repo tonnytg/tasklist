@@ -22,6 +22,7 @@ func main() {
 	}
 }
 
+// processArgs implements actions with values definied
 func processArgs(args []string) error {
 	if len(args) == 0 {
 		fmt.Println(ClientHelp)
@@ -39,6 +40,7 @@ func processArgs(args []string) error {
 	}
 }
 
+// handleAdd save tile and content and create a new Task
 func handleAdd(args []string) error {
 	if len(args) == 0 {
 		fmt.Println(AddHelp)
